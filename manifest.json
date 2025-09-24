@@ -1,22 +1,22 @@
 {
   "id": "/index.html",
-  "name": "My Business App",
-  "short_name": "BusinessApp",
+  "name": "Jothi Anantham Chits",
+  "short_name": "JothiChits",
   "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
-  "theme_color": "#0d6efd",
-  "description": "My business PWA app for quick access and offline use",
+  "theme_color": "#2c3e50",
+  "description": "Jothi Anantham Chits — Business & Collection App",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512.png",
+      "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
