@@ -1,10 +1,12 @@
-const CACHE_NAME = "business-app-cache-v1";
+const CACHE_NAME = "jothichits-cache-v1";
 const urlsToCache = [
   "/",
   "/index.html",
+  "/index.html.html",
+  "/collection_report.html",
   "/manifest.json",
-  "/icon-192.png",
-  "/icon-512.png"
+  "/icons/icon-192.png",
+  "/icons/icon-512.png"
 ];
 
 // Install
