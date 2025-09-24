@@ -139,7 +139,7 @@
       <button class="btn-transaction" onclick="location.href='Login.html'">Transaction Entry</button>
     </div>
   </div>
-
+ 
   <!-- Install prompt -->
   <div id="installBar">
     <div style="font-weight:600">Install Jothi Anantham Chits</div>
@@ -148,7 +148,7 @@
       <button id="dismissInstall">Close</button>
     </div>
   </div>
-
+<link rel="manifest" href="manifest.json" />
   <script>
     // Service worker register
     if ('serviceWorker' in navigator) {
@@ -191,6 +191,10 @@
     window.addEventListener('online', updateNetworkStatus);
     window.addEventListener('offline', updateNetworkStatus);
     updateNetworkStatus();
+     if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js');
+  }
   </script>
 </body>
 </html>
+
