@@ -1,196 +1,33 @@
 <!DOCTYPE html>
-<html lang="ta">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#ffffff"/>
-  <title>Jothi Anantham Chits - Home</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0d6efd">
+  <title>My Business App</title>
 
-  <!-- PWA manifest -->
-  <link rel="manifest" href="manifest.json" />
-  <!-- Add icons for older browsers -->
-  <link rel="icon" href="icons/icon-192.png" sizes="192x192" />
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6f9;
-    }
-    .container {
-      display: flex;
-      height: 100vh;
-    }
-    /* Left slideshow */
-    .slideshow {
-      flex: 2;
-      position: relative;
-      overflow: hidden;
-    }
-    .slides {
-      display: flex;
-      width: 300%;
-      height: 100%;
-      animation: slide 15s infinite;
-    }
-    .slides img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    @keyframes slide {
-      0% { transform: translateX(0); }
-      33% { transform: translateX(-100%); }
-      66% { transform: translateX(-200%); }
-      100% { transform: translateX(0); }
-    }
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
 
-    /* Right side menu */
-    .menu {
-      flex: 1;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      box-shadow: -3px 0 10px rgba(0,0,0,0.1);
-      padding: 20px;
-    }
-    .menu h1 {
-      color: #2c3e50;
-      margin-bottom: 30px;
-      text-align: center;
-    }
-    .menu button {
-      width: 220px;
-      padding: 15px;
-      margin: 12px;
-      font-size: 18px;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .menu button:hover { opacity: 0.9; transform: translateY(-2px); }
+  <!-- Icons -->
+  <link rel="icon" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-512.png">
 
-    .btn-admin { background-color: #3498db; color: #fff; }
-    .btn-accounts { background-color: #27ae60; color: #fff; }
-    .btn-transaction { background-color: #9b59b6; color: #fff; }
-
-    /* Install prompt bar */
-    #installBar {
-      display:none;
-      position: fixed;
-      left: 12px;
-      right: 12px;
-      bottom: 20px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-      padding: 10px 14px;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      z-index: 999;
-    }
-    #installBar button { padding:8px 12px; border-radius:8px; border:none; font-weight:600; cursor:pointer;}
-    #installBar .primary { background:#3498db; color:#fff; }
-    #offlineNotice {
-      display:none;
-      position:fixed;
-      top:12px;
-      left:12px;
-      right:12px;
-      background:#ffefc6;
-      border-radius:10px;
-      padding:8px 12px;
-      text-align:center;
-      box-shadow:0 6px 18px rgba(0,0,0,0.08);
-      z-index:999;
-    }
-
-    /* Responsive */
-    @media (max-width:800px){
-      .container { flex-direction:column; height:100%; }
-      .slideshow{ height:45vh; }
-      .menu{ padding:18px; }
-      .menu button{ width:100%; }
-    }
-  </style>
-</head>
-<body>
-  <div id="offlineNotice">உங்கள் இணையம் இல்லாமல் இருக்கிறதா? சில வசதிகள் offline-ல வேலை செய்யலாம்.</div>
-
-  <div class="container">
-    <!-- Slideshow Section -->
-    <div class="slideshow">
-      <div class="slides">
-        <img src="https://img.freepik.com/free-vector/finance-concept-illustration_114360-2741.jpg" alt="Chit Fund Image 1">
-        <img src="https://img.freepik.com/free-vector/savings-concept-illustration_114360-2146.jpg" alt="Chit Fund Image 2">
-        <img src="https://img.freepik.com/free-vector/financial-data-concept-illustration_114360-1188.jpg" alt="Chit Fund Image 3">
-      </div>
-    </div>
-
-    <!-- Menu Section -->
-    <div class="menu">
-      <h1>Jothi Anantham Chits</h1>
-      <button class="btn-admin" onclick="location.href='index.html.html'">Admin & Collection</button>
-      <button class="btn-accounts" onclick="location.href='Succuss.html'">Success story / Testimonial</button>
-      <button class="btn-transaction" onclick="location.href='Login.html'">Transaction Entry</button>
-    </div>
-  </div>
-
-  <!-- Install prompt -->
-  <div id="installBar">
-    <div style="font-weight:600">Install Jothi Anantham Chits</div>
-    <div>
-      <button id="installBtn" class="primary">Install</button>
-      <button id="dismissInstall">Close</button>
-    </div>
-  </div>
-
+  <!-- Register Service Worker -->
   <script>
-    // Service worker register
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
-          .then(reg => console.log('SW registered', reg))
-          .catch(err => console.warn('SW register failed', err));
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js")
+          .then(reg => console.log("✅ Service Worker registered:", reg.scope))
+          .catch(err => console.log("❌ Service Worker failed:", err));
       });
     }
-
-    // Handle beforeinstallprompt for custom install UI
-    let deferredPrompt;
-    const installBar = document.getElementById('installBar');
-    const installBtn = document.getElementById('installBtn');
-    const dismissBtn = document.getElementById('dismissInstall');
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installBar.style.display = 'flex';
-    });
-
-    installBtn.addEventListener('click', async () => {
-      installBar.style.display = 'none';
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      deferredPrompt = null;
-    });
-
-    dismissBtn.addEventListener('click', () => {
-      installBar.style.display = 'none';
-    });
-
-    // Show offline notice on offline
-    function updateNetworkStatus() {
-      const off = !navigator.onLine;
-      document.getElementById('offlineNotice').style.display = off ? 'block' : 'none';
-    }
-    window.addEventListener('online', updateNetworkStatus);
-    window.addEventListener('offline', updateNetworkStatus);
-    updateNetworkStatus();
   </script>
+</head>
+<body>
+  <h1>🚀 Welcome to My Business App</h1>
+  <p>This is a free Progressive Web App (PWA) for my business.</p>
+  <p>✅ Works offline</p>
+  <p>✅ Can be installed like a mobile app</p>
 </body>
 </html>
