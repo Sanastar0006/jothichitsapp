@@ -1,0 +1,2232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accounting System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1, h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #34495e;
+            text-align: center;
+        }
+        input, select, textarea {
+            width: 50%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 20px;
+            box-sizing: border-box;
+            margin: 0 auto;
+        }
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 1em;
+        }
+        .save-btn {
+            background-color: #27ae60;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 50%;
+            margin: 10px auto;
+            transition: background-color 0.3s;
+        }
+        .nav-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            justify-content: center;
+        }
+        .save-btn:hover {
+            background-color: #2ecc71;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            background: #f1f1f1;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+            border-radius: 4px 4px 0 0;
+        }
+        .tab-btn.active {
+            background: #3498db;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 2px;
+            text-align: center;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        tr:hover {
+            background-color: #e9f7fe;
+        }
+        .delete-btn, .edit-btn {
+            background-color: #e74c3c;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        .edit-btn {
+            background-color: #f1c40f;
+        }
+        .edit-btn:hover {
+            background-color: #e1b307;
+        }
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+        .total-row {
+            font-weight: bold;
+            background-color: #ecf0f1 !important;
+        }
+        .hidden-fields {
+            display: none;
+        }
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+        .radio-option {
+            display: flex;
+            align-items: center;
+        }
+        .radio-option input {
+            width: auto;
+            margin-right: 5px;
+        }
+        .export-btn {
+            background-color: #9b59b6;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 auto 15px;
+            display: block;
+        }
+        .export-btn:hover {
+            background-color: #8e44ad;
+        }
+        .amount {
+            text-align: center;
+        }
+        .upload-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px dashed #3498db;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+        .upload-btn {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .upload-btn:hover {
+            background-color: #2980b9;
+        }
+        .file-info {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+        .progress-container {
+            margin: 15px 0;
+            display: none;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+        }
+        .progress {
+            height: 20px;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            width: 0%;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+        }
+        .status-text {
+            margin-top: 5px;
+            font-size: 14px;
+            color: #555;
+        }
+        .transfer-fields {
+            display: none;
+            width: 50%;
+            margin: 0 auto;
+        }
+        #combinedTable th, #combinedTable td {
+            font-size: 12px;
+            padding: 4px;
+        }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+        }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-btn:hover,
+        .close-btn:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .modal-form .form-group {
+            margin-bottom: 15px;
+        }
+        .modal-form button {
+            background-color: #27ae60;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .modal-form button:hover {
+            background-color: #2ecc71;
+        }
+        /* Filter Styles */
+        .filter-section {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            margin: 0 10px;
+        }
+        .filter-group label {
+            margin-right: 5px;
+            font-weight: normal;
+        }
+        .filter-group input, .filter-group select {
+            width: auto;
+            padding: 5px;
+            font-size: 14px;
+        }
+        .filter-btn {
+            background-color: #3498db;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .filter-btn:hover {
+            background-color: #2980b9;
+        }
+        .reset-btn {
+            background-color: #e74c3c;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .reset-btn:hover {
+            background-color: #c0392b;
+        }
+        .clear-all-btn {
+            background-color: #e74c3c;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .clear-all-btn:hover {
+            background-color: #c0392b;
+        }
+        .transaction-totals {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #e8f4f8;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-around;
+            font-weight: bold;
+        }
+        .total-cr {
+            color: #27ae60;
+        }
+        .total-dr {
+            color: #e74c3c;
+        }
+
+    .logout { background:#dc3545; } 
+    .logout:hover { background:#a71d2a; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Accounting System</h1>
+        <button id="clearAllBtn" class="clear-all-btn">Clear All Data</button>
+        
+        <div class="nav-tabs">
+            <button class="tab-btn active" data-tab="entry">Entry</button>
+            <button class="tab-btn" data-tab="cash">Cash Transactions</button>
+            <button class="tab-btn" data-tab="bank">Bank Transactions</button>
+            <button class="tab-btn" data-tab="combined">Combined Report</button>
+        </div>
+        
+        <!-- Entry Form -->
+        <div id="entry" class="tab-content active"><button class="btn logout" onclick="logout()">Logout</button>
+            <h2>Enter Opening Balances</h2>
+            <div class="form-group">
+                <label for="cashOpeningBalance">Cash Opening Balance (₹):</label>
+                <input type="number" id="cashOpeningBalance" name="cashOpeningBalance" step="0.01" value="0.00">
+                <button type="button" id="saveCashOpeningBalance" class="save-btn">Save Cash Opening Balance</button>
+            </div>
+            <div class="form-group">
+                <label for="bankOpeningBalance">Bank Opening Balance (₹):</label>
+                <input type="number" id="bankOpeningBalance" name="bankOpeningBalance" step="0.01" value="0.00">
+                <button type="button" id="saveBankOpeningBalance" class="save-btn">Save Bank Opening Balance</button>
+            </div>
+            
+            <!-- Document Upload Section -->
+            <div class="upload-section">
+                <h2>Upload Collection Report</h2>
+                <p>Upload PDF or Excel files to automatically add cash transactions</p>
+                <input type="file" id="fileUpload" accept=".pdf,.xlsx,.xls" style="display: none;">
+                <button class="upload-btn" id="uploadBtn">Choose File</button>
+                <div class="file-info" id="fileInfo">No file selected</div>
+                <button class="save-btn" id="processFileBtn" style="display: none; width: 200px;">Process File</button>
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar">
+                        <div class="progress" id="pdfProgress">0%</div>
+                    </div>
+                    <div class="status-text" id="pdfStatus">Extracting text from PDF...</div>
+                </div>
+            </div>
+            
+            <h2>Enter Transaction</h2>
+            <form id="transactionForm">
+                <div class="form-group">
+                    <label for="date">Date:</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+                
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="cashOption" name="transactionMode" value="cash" checked>
+                        <label for="cashOption">Cash</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="bankOption" name="transactionMode" value="bank">
+                        <label for="bankOption">Bank</label>
+                    </div>
+                </div>
+                
+                <div id="cashFields">
+                    <div class="form-group">
+                        <label for="transactionHead">Transaction Head:</label>
+                        <select id="transactionHead" name="transactionHead" required>
+                            <option value="">Select Transaction Head</option>
+                            <option value="Receipt">Receipt</option>
+                            <option value="Payment">Payment</option>
+                            <option value="Contra">Contra</option>
+                            <option value="Journal">Journal</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ledgerHead">Ledger Head:</label>
+                        <select id="ledgerHead" name="ledgerHead" required>
+                            <option value="">Select Ledger Head</option>
+                        </select>
+                    </div>
+                    
+                    <div id="customerFields" class="hidden-fields">
+                        <div class="form-group">
+                            <label for="chitId">Chit ID:</label>
+                            <input type="text" id="chitId" name="chitId">
+                        </div>
+                        <div class="form-group">
+                            <label for="ticketNo">Ticket No:</label>
+                            <input type="text" id="ticketNo" name="ticketNo">
+                        </div>
+                        <div class="form-group">
+                            <label for="customerName">Customer Name:</label>
+                            <input type="text" id="customerName" name="customerName">
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="bankFields" class="hidden-fields">
+                    <div class="form-group">
+                        <label for="bankTransactionType">Transaction Type:</label>
+                        <select id="bankTransactionType" name="bankTransactionType" required>
+                            <option value="">Select Type</option>
+                            <option value="Deposit">Deposit</option>
+                            <option value="Withdrawal">Withdrawal</option>
+                            <option value="Transfer">Transfer</option>
+                        </select>
+                    </div>
+                    
+                    <div id="depositWithdrawalFields">
+                        <div class="form-group">
+                            <label for="ledgerHeadBank">Ledger Head:</label>
+                            <select id="ledgerHeadBank" name="ledgerHeadBank">
+                                <option value="">Select Ledger Head</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="bankName">Bank Name:</label>
+                            <select id="bankName" name="bankName">
+                                <option value="">Select Bank</option>
+                                <option value="AXIS BANK-TRICHY">AXIS BANK-TRICHY</option>
+                                <option value="AXIS BANK-Anand Sir">AXIS BANK-Anand Sir</option>
+                                <option value="SBI-PANDI">SBI-PANDI</option>
+                                <option value="KVB-TRICHY">KVB-TRICHY</option>
+                                <option value="KVB-SUDHA">KVB-SUDHA</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="ifsc">IFSC:</label>
+                            <input type="text" id="ifsc" name="ifsc" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="accountNumber">A/C Number:</label>
+                            <input type="text" id="accountNumber" name="accountNumber" readonly>
+                        </div>
+                        <div id="bankCustomerFields" class="hidden-fields">
+                            <div class="form-group">
+                                <label for="bankChitId">Chit ID:</label>
+                                <input type="text" id="bankChitId" name="bankChitId">
+                            </div>
+                            <div class="form-group">
+                                <label for="bankCustomerName">Customer Name:</label>
+                                <input type="text" id="bankCustomerName" name="bankCustomerName">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="transferFields" class="transfer-fields">
+                        <div class="form-group">
+                            <label for="fromAccount">From Account:</label>
+                            <select id="fromAccount" name="fromAccount">
+                                <option value="">Select From Account</option>
+                                <option value="AXIS BANK-TRICHY">AXIS BANK-TRICHY</option>
+                                <option value="AXIS BANK-Anand Sir">AXIS BANK-Anand Sir</option>
+                                <option value="SBI-PANDI">SBI-PANDI</option>
+                                <option value="KVB-TRICHY">KVB-TRICHY</option>
+                                <option value="KVB-SUDHA">KVB-SUDHA</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="fromIfsc">From IFSC:</label>
+                            <input type="text" id="fromIfsc" name="fromIfsc" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="fromAccountNumber">From A/C Number:</label>
+                            <input type="text" id="fromAccountNumber" name="fromAccountNumber" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="toAccount">To Account:</label>
+                            <select id="toAccount" name="toAccount">
+                                <option value="">Select To Account</option>
+                                <option value="AXIS BANK-TRICHY">AXIS BANK-TRICHY</option>
+                                <option value="AXIS BANK-Anand Sir">AXIS BANK-Anand Sir</option>
+                                <option value="SBI-PANDI">SBI-PANDI</option>
+                                <option value="KVB-TRICHY">KVB-TRICHY</option>
+                                <option value="KVB-SUDHA">KVB-SUDHA</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="toIfsc">To IFSC:</label>
+                            <input type="text" id="toIfsc" name="toIfsc" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="toAccountNumber">To A/C Number:</label>
+                            <input type="text" id="toAccountNumber" name="toAccountNumber" readonly>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="amount">Amount (₹):</label>
+                    <input type="number" id="amount" name="amount" step="0.01" min="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="receiptNo">Receipt No:</label>
+                    <input type="text" id="receiptNo" name="receiptNo" required>
+                </div>
+                
+                <button type="submit" class="save-btn">Save Transaction</button>
+            </form>
+        </div>
+        
+        <!-- Cash Transactions -->
+        <div id="cash" class="tab-content">
+            <h2>Cash Transactions</h2>
+            
+            <!-- Cash Filter Section -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label for="cashDateFrom">From:</label>
+                    <input type="date" id="cashDateFrom">
+                </div>
+                <div class="filter-group">
+                    <label for="cashDateTo">To:</label>
+                    <input type="date" id="cashDateTo">
+                </div>
+                <div class="filter-group">
+                    <label for="cashTransactionHead">Transaction Head:</label>
+                    <select id="cashTransactionHead">
+                        <option value="">All</option>
+                        <option value="Receipt">Receipt</option>
+                        <option value="Payment">Payment</option>
+                        <option value="Contra">Contra</option>
+                        <option value="Journal">Journal</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="cashLedgerHead">Ledger Head:</label>
+                    <select id="cashLedgerHead">
+                        <option value="">All</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="cashCustomerName">Customer:</label>
+                    <input type="text" id="cashCustomerName" placeholder="Customer name">
+                </div>
+                <button id="filterCashBtn" class="filter-btn">Filter</button>
+                <button id="resetCashFilterBtn" class="reset-btn">Reset</button>
+            </div>
+            
+            <!-- Cash Totals -->
+            <div class="transaction-totals">
+                <div>Total Receipts: <span id="cashTotalCr" class="total-cr">₹0.00</span></div>
+                <div>Total Payments: <span id="cashTotalDr" class="total-dr">₹0.00</span></div>
+                <div>Balance: <span id="cashBalance">₹0.00</span></div>
+            </div>
+            
+            <table id="cashTable">
+                <thead>
+                    <tr>
+                        <th>Sl.No</th>
+                        <th>Transaction Details</th>
+                        <th>Date</th>
+                        <th>Receipt No.</th>
+                        <th>Day</th>
+                        <th>Client Name</th>
+                        <th>Chit Group</th>
+                        <th>Cr (₹)</th>
+                        <th>Dr. (₹)</th>
+                        <th>Transaction Details</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Cash transactions will appear here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Bank Transactions -->
+        <div id="bank" class="tab-content">
+            <h2>Bank Transactions</h2>
+            
+            <!-- Bank Filter Section -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label for="bankDateFrom">From:</label>
+                    <input type="date" id="bankDateFrom">
+                </div>
+                <div class="filter-group">
+                    <label for="bankDateTo">To:</label>
+                    <input type="date" id="bankDateTo">
+                </div>
+                <div class="filter-group">
+                    <label for="bankTransactionTypeFilter">Transaction Type:</label>
+                    <select id="bankTransactionTypeFilter">
+                        <option value="">All</option>
+                        <option value="Deposit">Deposit</option>
+                        <option value="Withdrawal">Withdrawal</option>
+                        <option value="Transfer">Transfer</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="bankNameFilter">Bank Name:</label>
+                    <select id="bankNameFilter">
+                        <option value="">All</option>
+                        <option value="AXIS BANK-TRICHY">AXIS BANK-TRICHY</option>
+                        <option value="AXIS BANK-Anand Sir">AXIS BANK-Anand Sir</option>
+                        <option value="SBI-PANDI">SBI-PANDI</option>
+                        <option value="KVB-TRICHY">KVB-TRICHY</option>
+                        <option value="KVB-SUDHA">KVB-SUDHA</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="bankCustomerNameFilter">Customer:</label>
+                    <input type="text" id="bankCustomerNameFilter" placeholder="Customer name">
+                </div>
+                <button id="filterBankBtn" class="filter-btn">Filter</button>
+                <button id="resetBankFilterBtn" class="reset-btn">Reset</button>
+            </div>
+            
+            <!-- Bank Totals -->
+            <div class="transaction-totals">
+                <div>Total Deposits: <span id="bankTotalCr" class="total-cr">₹0.00</span></div>
+                <div>Total Withdrawals: <span id="bankTotalDr" class="total-dr">₹0.00</span></div>
+                <div>Balance: <span id="bankBalance">₹0.00</span></div>
+            </div>
+            
+            <table id="bankTable">
+                <thead>
+                    <tr>
+                        <th>Sl.No</th>
+                        <th>Transaction Details</th>
+                        <th>Date</th>
+                        <th>Receipt No.</th>
+                        <th>Day</th>
+                        <th>Bank Name</th>
+                        <th>Account Number</th>
+                        <th>Customer Name</th>
+                        <th>Chit ID</th>
+                        <th>Cr (₹)</th>
+                        <th>Dr. (₹)</th>
+                        <th>Transaction Type</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Bank transactions will appear here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="combined" class="tab-content">
+            <h2>Combined Report</h2>
+            <button id="exportExcel" class="export-btn">Export to Excel</button>
+            <table id="combinedTable">
+                <thead>
+                    <tr>
+                        <th>Sl.No</th>
+                        <th>Transaction Details</th>
+                        <th>Date</th>
+                        <th>Receipt No.</th>
+                        <th>Day</th>
+                        <th>Customer Name</th>
+                        <th>Bank Name</th>
+                        <th>Account Number</th>
+                        <th>Chit ID</th>
+                        <th>Description</th>
+                        <th>Cr (₹)</th>
+                        <th>Dr. (₹)</th>
+                        <th>Transaction Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Combined transactions will appear here -->
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="10">Total</td>
+                        <td class="amount" id="totalCr">0.00</td>
+                        <td class="amount" id="totalDr">0.00</td>
+                        <td></td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="10">Closing Balance</td>
+                        <td colspan="3" class="amount" id="closingBalance">0.00</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        
+        <!-- Edit Modal -->
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <h2>Edit Transaction</h2>
+                <form id="editForm" class="modal-form">
+                    <div class="form-group">
+                        <label for="editDate">Date:</label>
+                        <input type="date" id="editDate" name="editDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDescription">Description:</label>
+                        <textarea id="editDescription" name="editDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editReceiptNo">Receipt No:</label>
+                        <input type="text" id="editReceiptNo" name="editReceiptNo" required>
+                    </div>
+                    <input type="hidden" id="editTransactionId">
+                    <button type="submit">Save Changes</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Include SheetJS for Excel processing -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+        <!-- Include PDF.js for PDF processing -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+        <script>
+            // Set PDF.js worker path
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
+
+            // Bank details database
+            const bankDetails = {
+                "AXIS BANK-TRICHY": {
+                    ifsc: "UTIB0000137",
+                    accountNumber: "924020031447752"
+                },
+                "KVB BANK-Ashok Sir": {
+                    ifsc: "UTIB0000137",
+                    accountNumber: "920010039934574"
+                },
+                "SBI-PANDI": {
+                    ifsc: "SBIN0007559",
+                    accountNumber: "33358313105"
+                },
+                "KVB-TRICHY": {
+                    ifsc: "KVBL0001816",
+                    accountNumber: "1816013000000090"
+                },
+                "KVB-SUDHA": {
+                    ifsc: "KVBL0001262",
+                    accountNumber: "1262135000015680"
+                }
+            };
+
+            // Initialize the app when DOM is loaded
+            document.addEventListener('DOMContentLoaded', function() {
+                // Set default date to today
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('date').value = today;
+                document.getElementById('cashDateFrom').value = today;
+                document.getElementById('cashDateTo').value = today;
+                document.getElementById('bankDateFrom').value = today;
+                document.getElementById('bankDateTo').value = today;
+                
+                // Load saved opening balances
+                loadOpeningBalances();
+                
+                // Load saved transactions
+                loadTransactions();
+                
+                // Tab functionality
+                setupTabs();
+                
+                // Clear All Data button
+                document.getElementById('clearAllBtn').addEventListener('click', clearAllData);
+                
+                // Transaction mode change (Cash/Bank)
+                document.querySelectorAll('input[name="transactionMode"]').forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        toggleTransactionMode(this.value);
+                    });
+                });
+                
+                // Transaction head change event
+                document.getElementById('transactionHead').addEventListener('change', function() {
+                    updateLedgerHeadOptions(this.value);
+                    toggleCustomerFields(document.getElementById('ledgerHead').value);
+                });
+                
+                // Ledger head change event
+                document.getElementById('ledgerHead').addEventListener('change', function() {
+                    toggleCustomerFields(this.value);
+                });
+                
+                // Bank transaction type change event
+                document.getElementById('bankTransactionType').addEventListener('change', function() {
+                    updateBankLedgerHeadOptions(this.value);
+                    toggleBankTransactionFields(this.value);
+                });
+                
+                // Bank ledger head change event
+                document.getElementById('ledgerHeadBank').addEventListener('change', function() {
+                    toggleBankCustomerFields(this.value);
+                });
+                
+                // Bank name change event
+                document.getElementById('bankName').addEventListener('change', function() {
+                    updateBankDetails(this.value, 'bankName', 'ifsc', 'accountNumber');
+                });
+                
+                // From account change event
+                document.getElementById('fromAccount').addEventListener('change', function() {
+                    updateBankDetails(this.value, 'fromAccount', 'fromIfsc', 'fromAccountNumber');
+                });
+                
+                // To account change event
+                document.getElementById('toAccount').addEventListener('change', function() {
+                    updateBankDetails(this.value, 'toAccount', 'toIfsc', 'toAccountNumber');
+                });
+                
+                // Form submission
+                document.getElementById('transactionForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    saveTransaction();
+                });
+                
+                // Save opening balance buttons
+                document.getElementById('saveCashOpeningBalance').addEventListener('click', saveCashOpeningBalance);
+                document.getElementById('saveBankOpeningBalance').addEventListener('click', saveBankOpeningBalance);
+                
+                // Export to Excel button
+                document.getElementById('exportExcel').addEventListener('click', exportToExcel);
+                
+                // File upload functionality
+                document.getElementById('uploadBtn').addEventListener('click', function() {
+                    document.getElementById('fileUpload').click();
+                });
+                
+                document.getElementById('fileUpload').addEventListener('change', function() {
+                    const file = this.files[0];
+                    if (file) {
+                        document.getElementById('fileInfo').textContent = file.name;
+                        document.getElementById('processFileBtn').style.display = 'block';
+                    } else {
+                        document.getElementById('fileInfo').textContent = 'No file selected';
+                        document.getElementById('processFileBtn').style.display = 'none';
+                    }
+                });
+                
+                document.getElementById('processFileBtn').addEventListener('click', processUploadedFile);
+                
+                // Edit modal functionality
+                const modal = document.getElementById('editModal');
+                const closeBtn = document.querySelector('.close-btn');
+                closeBtn.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+                
+                window.addEventListener('click', function(event) {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+                
+                document.getElementById('editForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    saveEditedTransaction();
+                });
+                
+                // Initialize with cash mode
+                toggleTransactionMode('cash');
+                
+                // Initialize ledger head options for filters
+                initializeFilterOptions();
+                
+                // Filter buttons
+                document.getElementById('filterCashBtn').addEventListener('click', function() {
+                    updateCashTable();
+                });
+                
+                document.getElementById('resetCashFilterBtn').addEventListener('click', function() {
+                    resetCashFilters();
+                });
+                
+                document.getElementById('filterBankBtn').addEventListener('click', function() {
+                    updateBankTable();
+                });
+                
+                document.getElementById('resetBankFilterBtn').addEventListener('click', function() {
+                    resetBankFilters();
+                });
+            });
+
+            // Function to clear all data
+            function clearAllData() {
+                if (confirm('Are you sure you want to clear ALL data? This will delete all transactions and opening balances. This action cannot be undone!')) {
+                    // Clear localStorage
+                    localStorage.removeItem('transactions');
+                    localStorage.removeItem('cashOpeningBalance');
+                    localStorage.removeItem('bankOpeningBalance');
+                    
+                    // Reset form fields
+                    document.getElementById('transactionForm').reset();
+                    document.getElementById('date').value = new Date().toISOString().split('T')[0];
+                    document.getElementById('cashOpeningBalance').value = '0.00';
+                    document.getElementById('bankOpeningBalance').value = '0.00';
+                    
+                    // Reset file upload
+                    document.getElementById('fileUpload').value = '';
+                    document.getElementById('fileInfo').textContent = 'No file selected';
+                    document.getElementById('processFileBtn').style.display = 'none';
+                    
+                    // Reset filters
+                    resetCashFilters();
+                    resetBankFilters();
+                    
+                    // Clear tables
+                    document.querySelector('#cashTable tbody').innerHTML = '';
+                    document.querySelector('#bankTable tbody').innerHTML = '';
+                    document.querySelector('#combinedTable tbody').innerHTML = '';
+                    
+                    // Reset totals
+                    document.getElementById('cashTotalCr').textContent = '₹0.00';
+                    document.getElementById('cashTotalDr').textContent = '₹0.00';
+                    document.getElementById('cashBalance').textContent = '₹0.00';
+                    document.getElementById('bankTotalCr').textContent = '₹0.00';
+                    document.getElementById('bankTotalDr').textContent = '₹0.00';
+                    document.getElementById('bankBalance').textContent = '₹0.00';
+                    document.getElementById('totalCr').textContent = '0.00';
+                    document.getElementById('totalDr').textContent = '0.00';
+                    document.getElementById('closingBalance').textContent = '0.00';
+                    
+                    alert('All data has been cleared successfully!');
+                }
+            }
+
+            // Initialize filter options
+            function initializeFilterOptions() {
+                // Cash ledger head options
+                const cashLedgerHead = document.getElementById('cashLedgerHead');
+                
+                const cashOptions = [
+                    'Customer Due Amount',
+                    'Interbranch amount Return TNJ',
+                    'Interbranch amount Return VPT',
+                    'Office Expenses Return',
+                    'MD own Amount',
+                    'ED own Amount',
+                    'Office Maintenance Return',
+                    'Salary return',
+                    'Salary Advance Return',
+                    'Prized Return',
+                    'Loan Return',
+                    'Personal Amount Return',
+                    'A/Withdrawn',
+                    'Petrol allowance',
+                    'Intreast Amount Paid Return',
+                    'Cancel Chit Commission Amount',
+                    'Office Expenses',
+                    'Office Maintenance',
+                    'Salary',
+                    'Salary Advance',
+                    'Prized Amount',
+                    'Loan',
+                    'Personal Amount',
+                    'Cash Deposited',
+                    'Petrol Allowance',
+                    'Intreast Amount Paid To',
+                    'Adjestment Amount',
+                    'Loan return',
+                    'Travel Allowance',
+                    'Canchel chit',
+                    'Bank Transfer',
+                    'Adjustment Entry'
+                ];
+                
+                cashOptions.forEach(option => {
+                    const opt = document.createElement('option');
+                    opt.value = option;
+                    opt.textContent = option;
+                    cashLedgerHead.appendChild(opt);
+                });
+            }
+
+            // Reset cash filters
+            function resetCashFilters() {
+                document.getElementById('cashDateFrom').value = new Date().toISOString().split('T')[0];
+                document.getElementById('cashDateTo').value = new Date().toISOString().split('T')[0];
+                document.getElementById('cashTransactionHead').value = '';
+                document.getElementById('cashLedgerHead').value = '';
+                document.getElementById('cashCustomerName').value = '';
+                updateCashTable();
+            }
+
+            // Reset bank filters
+            function resetBankFilters() {
+                document.getElementById('bankDateFrom').value = new Date().toISOString().split('T')[0];
+                document.getElementById('bankDateTo').value = new Date().toISOString().split('T')[0];
+                document.getElementById('bankTransactionTypeFilter').value = '';
+                document.getElementById('bankNameFilter').value = '';
+                document.getElementById('bankCustomerNameFilter').value = '';
+                updateBankTable();
+            }
+
+            // Toggle between Cash and Bank fields
+            function toggleTransactionMode(mode) {
+                const cashFields = document.getElementById('cashFields');
+                const bankFields = document.getElementById('bankFields');
+                const transactionHead = document.getElementById('transactionHead');
+                const ledgerHead = document.getElementById('ledgerHead');
+                const bankTransactionType = document.getElementById('bankTransactionType');
+                
+                if (mode === 'cash') {
+                    cashFields.classList.remove('hidden-fields');
+                    bankFields.classList.add('hidden-fields');
+                    transactionHead.required = true;
+                    ledgerHead.required = true;
+                    bankTransactionType.required = false;
+                    document.getElementById('bankName').required = false;
+                    ledgerHead.disabled = true;
+                } else {
+                    cashFields.classList.add('hidden-fields');
+                    bankFields.classList.remove('hidden-fields');
+                    transactionHead.required = false;
+                    ledgerHead.required = false;
+                    bankTransactionType.required = true;
+                    document.getElementById('bankName').required = true;
+                    ledgerHead.disabled = true;
+                    toggleBankTransactionFields(document.getElementById('bankTransactionType').value);
+                }
+            }
+
+            // Update bank ledger head options based on transaction type
+            function updateBankLedgerHeadOptions(transactionType) {
+                const ledgerHeadBank = document.getElementById('ledgerHeadBank');
+                ledgerHeadBank.innerHTML = '<option value="">Select Ledger Head</option>';
+                
+                const options = {
+                    'Deposit': [
+                        'Customer Due Amount',
+                        'Interbranch amount Return TNJ',
+                        'Interbranch amount Return VPT',
+                        'Office Expenses Return',
+                        'MD own Amount',
+                        'ED own Amount',
+                        'Office Maintenance Return',
+                        'Salary return',
+                        'Salary Advance Return',
+                        'Prized Return',
+                        'Loan Return',
+                        'Personal Amount Return',
+                        'A/Withdrawn'            
+                    ],
+                    'Withdrawal': [
+                        'Office Expenses',
+                        'Office Maintenance',
+                        'Salary',
+                        'Salary Advance',
+                        'Prized Amount',
+                        'Loan',
+                        'Personal Amount',
+                        'Cash Deposited'
+                    ],
+                    'Transfer': ['Bank Transfer']
+                };
+                
+                if (options[transactionType]) {
+                    options[transactionType].forEach(option => {
+                        const opt = document.createElement('option');
+                        opt.value = option;
+                        opt.textContent = option;
+                        ledgerHeadBank.appendChild(opt);
+                    });
+                }
+                
+                // Reset customer fields
+                document.getElementById('bankCustomerFields').classList.add('hidden-fields');
+            }
+
+            // Toggle bank customer fields based on ledger head
+            function toggleBankCustomerFields(ledgerHead) {
+                const bankCustomerFields = document.getElementById('bankCustomerFields');
+                const showFields = ['Customer Due Amount', 'Prized Amount'].includes(ledgerHead);
+                bankCustomerFields.classList.toggle('hidden-fields', !showFields);
+            }
+
+            // Toggle bank transaction fields based on transaction type
+            function toggleBankTransactionFields(transactionType) {
+                const depositWithdrawalFields = document.getElementById('depositWithdrawalFields');
+                const transferFields = document.getElementById('transferFields');
+                
+                if (transactionType === 'Transfer') {
+                    depositWithdrawalFields.style.display = 'none';
+                    transferFields.style.display = 'block';
+                    document.getElementById('fromAccount').required = true;
+                    document.getElementById('toAccount').required = true;
+                    document.getElementById('bankName').required = false;
+                    document.getElementById('ledgerHeadBank').required = false;
+                } else {
+                    depositWithdrawalFields.style.display = 'block';
+                    transferFields.style.display = 'none';
+                    document.getElementById('fromAccount').required = false;
+                    document.getElementById('toAccount').required = false;
+                    document.getElementById('bankName').required = true;
+                    document.getElementById('ledgerHeadBank').required = true;
+                    
+                    if (transactionType === 'Deposit') {
+                        const ledgerHead = document.getElementById('ledgerHeadBank').value;
+                        if (['Customer Due Amount', 'Prized Amount'].includes(ledgerHead)) {
+                            document.getElementById('bankCustomerFields').classList.remove('hidden-fields');
+                        }
+                    } else {
+                        document.getElementById('bankCustomerFields').classList.add('hidden-fields');
+                    }
+                }
+            }
+
+            // Update bank details when bank is selected
+            function updateBankDetails(bankName, bankSelectId, ifscId, accountNumberId) {
+                const ifscInput = document.getElementById(ifscId);
+                const accountNumberInput = document.getElementById(accountNumberId);
+                if (bankName && bankDetails[bankName]) {
+                    ifscInput.value = bankDetails[bankName].ifsc;
+                    accountNumberInput.value = bankDetails[bankName].accountNumber;
+                } else {
+                    ifscInput.value = '';
+                    accountNumberInput.value = '';
+                }
+            }
+
+            // Process uploaded file (PDF or Excel)
+            function processUploadedFile() {
+                const fileInput = document.getElementById('fileUpload');
+                const file = fileInput.files[0];
+                
+                if (!file) {
+                    alert('Please select a file first.');
+                    return;
+                }
+                
+                const fileType = file.name.split('.').pop().toLowerCase();
+                
+                if (fileType === 'pdf') {
+                    processPDF(file);
+                } else if (fileType === 'xlsx' || fileType === 'xls') {
+                    processExcel(file);
+                } else {
+                    alert('Unsupported file type. Please upload a PDF or Excel file.');
+                }
+            }
+
+            // Process PDF file
+            function processPDF(file) {
+                document.getElementById('progressContainer').style.display = 'block';
+                
+                const loadingTask = pdfjsLib.getDocument(URL.createObjectURL(file));
+                let extractedText = '';
+                let transactions = [];
+
+                loadingTask.promise.then(function(pdf) {
+                    const totalPages = pdf.numPages;
+                    let pagesProcessed = 0;
+                    const pagePromises = [];
+
+                    for (let i = 1; i <= totalPages; i++) {
+                        pagePromises.push(
+                            pdf.getPage(i).then(function(page) {
+                                return page.getTextContent().then(function(textContent) {
+                                    let pageText = '';
+                                    for (const item of textContent.items) {
+                                        pageText += item.str + ' ';
+                                    }
+                                    extractedText += pageText + '\n';
+                                    
+                                    pagesProcessed++;
+                                    const progress = Math.round((pagesProcessed / totalPages) * 100);
+                                    document.getElementById('pdfProgress').style.width = progress + '%';
+                                    document.getElementById('pdfProgress').textContent = progress + '%';
+                                    document.getElementById('pdfStatus').textContent = 
+                                        `Processing page ${pagesProcessed} of ${totalPages}...`;
+                                    
+                                    return pageText;
+                                });
+                            })
+                        );
+                    }
+
+                    return Promise.all(pagePromises);
+                }).then(function(pagesText) {
+                    const lines = extractedText.split('\n');
+                    let startProcessing = false;
+                    let transactionStarted = false;
+                    
+                    for (const line of lines) {
+                        if (line.includes('S.No') && line.includes('Rno') && line.includes('Date') && 
+                            line.includes('Member Name') && line.includes('Amount')) {
+                            startProcessing = true;
+                            continue;
+                        }
+                        
+                        if (startProcessing) {
+                            const transactionMatch = line.match(/(\d+)\s+(\d+)\s+([\d\/]+)\s+(.+?)\s+([\w\-]+)\s*\-\s*(\d+)\s+(\d+\.\d{2})/);
+                            
+                            if (transactionMatch) {
+                                transactionStarted = true;
+                                const chitGroup = transactionMatch[5].replace(/\s+/g, '').replace(/-/g, '') + transactionMatch[6];
+                                const transaction = {
+                                    receiptNo: transactionMatch[2] || '',
+                                    date: formatExcelDate(transactionMatch[3]),
+                                    customerName: transactionMatch[4] ? transactionMatch[4].trim() : '',
+                                    chitId: chitGroup,
+                                    amount: parseFloat(transactionMatch[7]) || 0
+                                };
+                                
+                                if (transaction.amount > 0) {
+                                    transactions.push(transaction);
+                                }
+                            } else if (transactionStarted) {
+                                break;
+                            }
+                        }
+                    }
+                    
+                    document.getElementById('progressContainer').style.display = 'none';
+                    
+                    if (transactions.length > 0) {
+                        addCollectionTransactions(transactions);
+                    } else {
+                        alert('No valid transactions found in the PDF. Please check the format or use Excel files for more reliable processing.');
+                        console.log('Extracted text for debugging:', extractedText);
+                    }
+                }).catch(function(error) {
+                    document.getElementById('progressContainer').style.display = 'none';
+                    alert('Error processing PDF: ' + error.message);
+                    console.error('PDF processing error:', error);
+                });
+            }
+
+            // Process Excel file
+            function processExcel(file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, rawNumbers: true });
+                    
+                    let transactions = [];
+                    let startProcessing = false;
+                    
+                    for (let i = 0; i < jsonData.length; i++) {
+                        const row = jsonData[i];
+                        
+                        if (row.length > 0 && row[0] === "S.No") {
+                            startProcessing = true;
+                            continue;
+                        }
+                        
+                        if (startProcessing && row.length >= 6) {
+                            const receiptNo = row[1] ? String(row[1]).trim() : '';
+                            let formattedDate;
+                            const excelDate = row[2];
+                            
+                            if (typeof excelDate === 'number') {
+                                const date = new Date((excelDate - (25567 + 1)) * 86400 * 1000);
+                                formattedDate = date.toISOString().split('T')[0];
+                            } else if (excelDate instanceof Date) {
+                                formattedDate = excelDate.toISOString().split('T')[0];
+                            } else if (typeof excelDate === 'string') {
+                                const dateStr = excelDate.trim();
+                                if (dateStr.includes('/')) {
+                                    const parts = dateStr.split('/');
+                                    if (parts.length === 3) {
+                                        const day = parts[0].padStart(2, '0');
+                                        const month = parts[1].padStart(2, '0');
+                                        const year = parts[2];
+                                        formattedDate = `${year}-${month}-${day}`;
+                                        if (!isValidDate(formattedDate)) {
+                                            formattedDate = new Date().toISOString().split('T')[0];
+                                        }
+                                    } else {
+                                        formattedDate = new Date().toISOString().split('T')[0];
+                                    }
+                                } else {
+                                    formattedDate = new Date().toISOString().split('T')[0];
+                                }
+                            } else {
+                                formattedDate = new Date().toISOString().split('T')[0];
+                            }
+                            
+                            const chitParts = String(row[4] || '').split('-');
+                            const chitGroup = (chitParts[0] || '').replace(/\s+/g, '').replace(/-/g, '') + 
+                                            (chitParts[1] || '').replace(/\s+/g, '');
+                            
+                            const transaction = {
+                                receiptNo: receiptNo,
+                                date: formattedDate,
+                                customerName: row[3] ? String(row[3]).trim() : '',
+                                chitId: chitGroup,
+                                amount: parseFloat(row[5]) || 0
+                            };
+                            
+                            if (transaction.amount > 0) {
+                                transactions.push(transaction);
+                            }
+                        }
+                    }
+                    
+                    if (transactions.length > 0) {
+                        addCollectionTransactions(transactions);
+                    } else {
+                        alert('No valid transactions found in the Excel file.');
+                    }
+                };
+                
+                reader.readAsArrayBuffer(file);
+            }
+
+            // Helper function to validate date
+            function isValidDate(dateStr) {
+                const regex = /^\d{4}-\d{2}-\d{2}$/;
+                if (!dateStr.match(regex)) return false;
+                const date = new Date(dateStr);
+                return !isNaN(date.getTime());
+            }
+
+            // Helper function to format Excel date
+            function formatExcelDate(excelDate) {
+                if (!excelDate) return new Date().toISOString().split('T')[0];
+                
+                if (typeof excelDate === 'string' && excelDate.includes('/')) {
+                    const parts = excelDate.split('/');
+                    if (parts.length === 3) {
+                        return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+                    }
+                    return excelDate;
+                }
+                
+                if (typeof excelDate === 'number') {
+                    const date = new Date((excelDate - (25567 + 1)) * 86400 * 1000);
+                    return date.toISOString().split('T')[0];
+                }
+                
+                return new Date().toISOString().split('T')[0];
+            }
+
+            // Add collection transactions to the system
+            function addCollectionTransactions(transactions) {
+                if (!transactions || transactions.length === 0) {
+                    alert('No transactions to add.');
+                    return;
+                }
+                
+                if (!confirm(`Add ${transactions.length} collection transactions to the system?`)) {
+                    return;
+                }
+                
+                let existingTransactions = JSON.parse(localStorage.getItem('transactions')) || [];
+                let receiptNumberBase = 1000;
+                
+                existingTransactions.forEach(t => {
+                    if (t.receiptNo && !isNaN(t.receiptNo)) {
+                        const num = parseInt(t.receiptNo);
+                        if (num > receiptNumberBase) {
+                            receiptNumberBase = num;
+                        }
+                    }
+                });
+                
+                transactions.forEach((t, index) => {
+                    const transaction = {
+                        id: Date.now() + index,
+                        date: t.date || new Date().toISOString().split('T')[0],
+                        amount: t.amount,
+                        description: 'Collection from ' + (t.customerName || 'customer'),
+                        receiptNo: (receiptNumberBase + index + 1).toString(),
+                        day: getDayName(t.date || new Date().toISOString().split('T')[0]),
+                        transactionMode: 'cash',
+                        transactionHead: 'Receipt',
+                        ledgerHead: 'Customer Due Amount',
+                        customerName: t.customerName || '',
+                        chitId: t.chitId || '',
+                        transactionType: 'Cash'
+                    };
+                    
+                    existingTransactions.push(transaction);
+                });
+                
+                localStorage.setItem('transactions', JSON.stringify(existingTransactions));
+                
+                updateCashTable();
+                updateBankTable();
+                updateCombinedTable();
+                
+                alert(`Successfully added ${transactions.length} collection transactions.`);
+                
+                document.getElementById('fileUpload').value = '';
+                document.getElementById('fileInfo').textContent = 'No file selected';
+                document.getElementById('processFileBtn').style.display = 'none';
+            }
+
+            // Load opening balances from localStorage
+            function loadOpeningBalances() {
+                const cashOpeningBalance = parseFloat(localStorage.getItem('cashOpeningBalance')) || 0.00;
+                const bankOpeningBalance = parseFloat(localStorage.getItem('bankOpeningBalance')) || 0.00;
+                document.getElementById('cashOpeningBalance').value = cashOpeningBalance.toFixed(2);
+                document.getElementById('bankOpeningBalance').value = bankOpeningBalance.toFixed(2);
+            }
+
+            // Save cash opening balance
+            function saveCashOpeningBalance() {
+                const cashOpeningBalance = parseFloat(document.getElementById('cashOpeningBalance').value) || 0.00;
+                if (cashOpeningBalance < 0) {
+                    alert('Cash Opening Balance cannot be negative.');
+                    return;
+                }
+                localStorage.setItem('cashOpeningBalance', cashOpeningBalance.toFixed(2));
+                alert('Cash Opening Balance saved successfully!');
+                updateCashTable();
+                updateCombinedTable();
+            }
+
+            // Save bank opening balance
+            function saveBankOpeningBalance() {
+                const bankOpeningBalance = parseFloat(document.getElementById('bankOpeningBalance').value) || 0.00;
+                if (bankOpeningBalance < 0) {
+                    alert('Bank Opening Balance cannot be negative.');
+                    return;
+                }
+                localStorage.setItem('bankOpeningBalance', bankOpeningBalance.toFixed(2));
+                alert('Bank Opening Balance saved successfully!');
+                updateBankTable();
+                updateCombinedTable();
+            }
+
+            // Tab functionality
+            function setupTabs() {
+                const tabBtns = document.querySelectorAll('.tab-btn');
+                tabBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                        this.classList.add('active');
+                        document.getElementById(this.dataset.tab).classList.add('active');
+                        if (this.dataset.tab === 'cash') {
+                            updateCashTable();
+                        } else if (this.dataset.tab === 'bank') {
+                            updateBankTable();
+                        } else if (this.dataset.tab === 'combined') {
+                            updateCombinedTable();
+                        }
+                    });
+                });
+            }
+
+            // Update ledger head options based on transaction head
+            function updateLedgerHeadOptions(transactionHead) {
+                const ledgerHeadSelect = document.getElementById('ledgerHead');
+                ledgerHeadSelect.innerHTML = '<option value="">Select Ledger Head</option>';
+                ledgerHeadSelect.disabled = false;
+                
+                const options = {
+                    'Receipt': [
+                        'Customer Due Amount',
+                        'Interbranch amount Return TNJ',
+                        'Interbranch amount Return VPT',
+                        'Office Expenses Return',
+                        'MD own Amount',
+                        'ED own Amount',
+                        'Office Maintenance Return',
+                        'Salary return',
+                        'Salary Advance Return',
+                        'Prized Return',
+                        'Loan Return',
+                        'Personal Amount Return',
+                        'A/Withdrawn',
+                        'Petrol allowance',
+                        'Intreast Amount Paid Return',
+                        'Cancel Chit Commission Amount'           
+                    ],
+                    'Payment': [
+                        'Office Expenses',
+                        'Office Maintenance',
+                        'Salary',
+                        'Salary Advance',
+                        'Prized Amount',
+                        'Loan',
+                        'Personal Amount',
+                        'Cash Deposited',
+                        'Petrol Allowance',
+                        'Intreast Amount Paid To',
+                        'Adjestment Amount',
+                        'Loan return',
+                        'Travel Allowance',
+                        'Canchel chit'
+                    ],
+                    'Contra': ['Bank Transfer'],
+                    'Journal': ['Adjustment Entry']
+                };
+                
+                if (options[transactionHead]) {
+                    options[transactionHead].forEach(option => {
+                        const opt = document.createElement('option');
+                        opt.value = option;
+                        opt.textContent = option;
+                        ledgerHeadSelect.appendChild(opt);
+                    });
+                } else {
+                    ledgerHeadSelect.disabled = true;
+                }
+            }
+
+            // Toggle customer fields based on ledger head
+            function toggleCustomerFields(ledgerHead) {
+                const customerFields = document.getElementById('customerFields');
+                const showFields = ['Customer Due Amount', 'Prized Amount'].includes(ledgerHead);
+                customerFields.classList.toggle('hidden-fields', !showFields);
+            }
+
+            // Save transaction
+            function saveTransaction() {
+                try {
+                    const transactionMode = document.querySelector('input[name="transactionMode"]:checked').value;
+                    if (!transactionMode) {
+                        alert('Please select a transaction mode (Cash or Bank).');
+                        return;
+                    }
+
+                    const date = document.getElementById('date').value;
+                    const amount = parseFloat(document.getElementById('amount').value);
+                    const receiptNo = document.getElementById('receiptNo').value;
+                    const description = document.getElementById('description').value;
+
+                    if (!date) {
+                        alert('Please select a valid date.');
+                        return;
+                    }
+                    if (isNaN(amount) || amount <= 0) {
+                        alert('Please enter a valid positive amount.');
+                        return;
+                    }
+                    if (!receiptNo.trim()) {
+                        alert('Please enter a receipt number.');
+                        return;
+                    }
+
+                    const transaction = {
+                        id: Date.now(),
+                        date: date,
+                        amount: amount,
+                        description: description || '',
+                        receiptNo: receiptNo,
+                        day: getDayName(date),
+                        transactionMode: transactionMode
+                    };
+
+                    if (transactionMode === 'cash') {
+                        const transactionHead = document.getElementById('transactionHead').value;
+                        const ledgerHead = document.getElementById('ledgerHead').value;
+
+                        if (!transactionHead) {
+                            alert('Please select a Transaction Head.');
+                            return;
+                        }
+                        if (!ledgerHead) {
+                            alert('Please select a Ledger Head.');
+                            return;
+                        }
+
+                        transaction.transactionHead = transactionHead;
+                        transaction.ledgerHead = ledgerHead;
+                        transaction.transactionType = 'Cash';
+
+                        if (['Customer Due Amount', 'Prized Amount'].includes(ledgerHead)) {
+                            transaction.chitId = document.getElementById('chitId').value || '';
+                            transaction.ticketNo = document.getElementById('ticketNo').value || '';
+                            transaction.customerName = document.getElementById('customerName').value || '';
+                        }
+                    } else {
+                        const bankTransactionType = document.getElementById('bankTransactionType').value;
+                        const ledgerHeadBank = document.getElementById('ledgerHeadBank').value;
+
+                        if (!bankTransactionType) {
+                            alert('Please select a Bank Transaction Type.');
+                            return;
+                        }
+
+                        transaction.bankTransactionType = bankTransactionType;
+                        transaction.transactionType = 'Bank';
+                        transaction.ledgerHead = ledgerHeadBank || 'Bank ' + bankTransactionType;
+
+                        if (bankTransactionType === 'Transfer') {
+                            const fromAccount = document.getElementById('fromAccount').value;
+                            const toAccount = document.getElementById('toAccount').value;
+
+                            if (!fromAccount || !toAccount) {
+                                alert('Please select both From and To accounts for transfer.');
+                                return;
+                            }
+
+                            transaction.fromBankName = fromAccount;
+                            transaction.fromIfsc = document.getElementById('fromIfsc').value;
+                            transaction.fromAccountNumber = document.getElementById('fromAccountNumber').value;
+                            transaction.toBankName = toAccount;
+                            transaction.toIfsc = document.getElementById('toIfsc').value;
+                            transaction.toAccountNumber = document.getElementById('toAccountNumber').value;
+                        } else {
+                            const bankName = document.getElementById('bankName').value;
+                            if (!bankName) {
+                                alert('Please select a Bank Name.');
+                                return;
+                            }
+
+                            transaction.bankName = bankName;
+                            transaction.ifsc = document.getElementById('ifsc').value;
+                            transaction.accountNumber = document.getElementById('accountNumber').value;
+
+                            if (bankTransactionType === 'Deposit' && ['Customer Due Amount', 'Prized Amount'].includes(ledgerHeadBank)) {
+                                transaction.customerName = document.getElementById('bankCustomerName').value || '';
+                                transaction.chitId = document.getElementById('bankChitId').value || '';
+                            }
+                        }
+                    }
+
+                    let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+                    transactions.push(transaction);
+                    localStorage.setItem('transactions', JSON.stringify(transactions));
+
+                    document.getElementById('transactionForm').reset();
+                    document.getElementById('date').value = new Date().toISOString().split('T')[0];
+                    document.getElementById('ledgerHead').innerHTML = '<option value="">Select Ledger Head</option>';
+                    document.getElementById('ledgerHead').disabled = true;
+                    document.getElementById('customerFields').classList.add('hidden-fields');
+                    document.getElementById('bankCustomerFields').classList.add('hidden-fields');
+                    document.getElementById('transactionHead').value = '';
+                    document.getElementById('bankTransactionType').value = '';
+                    document.getElementById('bankName').value = '';
+                    document.getElementById('fromAccount').value = '';
+                    document.getElementById('toAccount').value = '';
+                    document.getElementById('ledgerHeadBank').innerHTML = '<option value="">Select Ledger Head</option>';
+                    document.querySelector('input[name="transactionMode"][value="cash"]').checked = true;
+                    toggleTransactionMode('cash');
+
+                    alert('Transaction saved successfully!');
+
+                    updateCashTable();
+                    updateBankTable();
+                    updateCombinedTable();
+                } catch (error) {
+                    console.error('Error saving transaction:', error);
+                    alert('An error occurred while saving the transaction. Please check the console for details.');
+                }
+            }
+
+            // Edit transaction
+            function editTransaction(id) {
+                const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+                const transaction = transactions.find(t => t.id === parseInt(id));
+                if (!transaction) {
+                    alert('Transaction not found.');
+                    return;
+                }
+
+                const modal = document.getElementById('editModal');
+                document.getElementById('editTransactionId').value = id;
+                document.getElementById('editDate').value = transaction.date;
+                document.getElementById('editDescription').value = transaction.description || '';
+                document.getElementById('editReceiptNo').value = transaction.receiptNo;
+
+                modal.style.display = 'block';
+            }
+
+            // Save edited transaction
+            function saveEditedTransaction() {
+                const id = parseInt(document.getElementById('editTransactionId').value);
+                const date = document.getElementById('editDate').value;
+                const description = document.getElementById('editDescription').value;
+                const receiptNo = document.getElementById('editReceiptNo').value;
+
+                if (!date) {
+                    alert('Please select a valid date.');
+                    return;
+                }
+                if (!receiptNo.trim()) {
+                    alert('Please enter a receipt number.');
+                    return;
+                }
+
+                let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+                const transactionIndex = transactions.findIndex(t => t.id === id);
+                if (transactionIndex === -1) {
+                    alert('Transaction not found.');
+                    return;
+                }
+
+                transactions[transactionIndex].date = date;
+                transactions[transactionIndex].description = description;
+                transactions[transactionIndex].receiptNo = receiptNo;
+                transactions[transactionIndex].day = getDayName(date);
+
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+
+                document.getElementById('editModal').style.display = 'none';
+                document.getElementById('editForm').reset();
+
+                updateCashTable();
+                updateBankTable();
+                updateCombinedTable();
+
+                alert('Transaction updated successfully!');
+            }
+
+            // Load transactions from localStorage
+            function loadTransactions() {
+                updateCashTable();
+                updateBankTable();
+                updateCombinedTable();
+            }
+
+            // Update cash table with filters
+            function updateCashTable() {
+                let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+                const cashTable = document.querySelector('#cashTable tbody');
+                cashTable.innerHTML = '';
+                
+                // Apply filters
+                const dateFrom = document.getElementById('cashDateFrom').value;
+                const dateTo = document.getElementById('cashDateTo').value;
+                const transactionHead = document.getElementById('cashTransactionHead').value;
+                const ledgerHead = document.getElementById('cashLedgerHead').value;
+                const customerName = document.getElementById('cashCustomerName').value.toLowerCase();
+                
+                let filteredTransactions = transactions.filter(t => t.transactionMode === 'cash');
+                
+                if (dateFrom) {
+                    filteredTransactions = filteredTransactions.filter(t => t.date >= dateFrom);
+                }
+                if (dateTo) {
+                    filteredTransactions = filteredTransactions.filter(t => t.date <= dateTo);
+                }
+                if (transactionHead) {
+                    filteredTransactions = filteredTransactions.filter(t => t.transactionHead === transactionHead);
+                }
+                if (ledgerHead) {
+                    filteredTransactions = filteredTransactions.filter(t => t.ledgerHead === ledgerHead);
+                }
+                if (customerName) {
+                    filteredTransactions = filteredTransactions.filter(t => 
+                        t.customerName && t.customerName.toLowerCase().includes(customerName));
+                }
+                
+                // Calculate totals
+                let totalCr = 0;
+                let totalDr = 0;
+                
+                const cashOpeningBalance = parseFloat(localStorage.getItem('cashOpeningBalance')) || 0.00;
+                const openingBalanceRow = document.createElement('tr');
+                openingBalanceRow.innerHTML = `
+                    <td>1</td>
+                    <td>Opening Balance</td>
+                    <td>${formatDate(new Date().toISOString().split('T')[0])}</td>
+                    <td>-</td>
+                    <td>${getDayName(new Date().toISOString().split('T')[0])}</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td class="amount">${formatCurrency(cashOpeningBalance)}</td>
+                    <td class="amount">0.00</td>
+                    <td>Opening Balance</td>
+                    <td></td>
+                `;
+                cashTable.appendChild(openingBalanceRow);
+                
+                filteredTransactions.forEach((transaction, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${index + 2}</td>
+                        <td>${transaction.ledgerHead}</td>
+                        <td>${formatDate(transaction.date)}</td>
+                        <td>${transaction.receiptNo}</td>
+                        <td>${transaction.day}</td>
+                        <td>${transaction.customerName || '-'}</td>
+                        <td>${transaction.chitId || '-'}</td>
+                        <td class="amount">${transaction.transactionHead === 'Receipt' ? formatCurrency(transaction.amount) : '0.00'}</td>
+                        <td class="amount">${transaction.transactionHead === 'Payment' ? formatCurrency(transaction.amount) : '0.00'}</td>
+                        <td>${transaction.transactionHead}</td>
+                        <td>
+                            <button class="edit-btn" data-id="${transaction.id}" data-type="cash">Edit</button>
+                            <button class="delete-btn" data-id="${transaction.id}" data-type="cash">Delete</button>
+                        </td>
+                    `;
+                    cashTable.appendChild(row);
+                    
+                    // Update totals
+                    if (transaction.transactionHead === 'Receipt') {
+                        totalCr += transaction.amount;
+                    } else if (transaction.transactionHead === 'Payment') {
+                        totalDr += transaction.amount;
+                    }
+                });
+                
+                // Update totals display
+                document.getElementById('cashTotalCr').textContent = `₹${formatCurrency(totalCr + cashOpeningBalance)}`;
+                document.getElementById('cashTotalDr').textContent = `₹${formatCurrency(totalDr)}`;
+                document.getElementById('cashBalance').textContent = `₹${formatCurrency((cashOpeningBalance + totalCr) - totalDr)}`;
+                
+                document.querySelectorAll('#cashTable .delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        deleteTransaction(this.dataset.id);
+                    });
+                });
+                
+                document.querySelectorAll('#cashTable .edit-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        editTransaction(this.dataset.id);
+                    });
+                });
+            }
+
+            // Update bank table with filters
+            function updateBankTable() {
+                let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+                const bankTable = document.querySelector('#bankTable tbody');
+                bankTable.innerHTML = '';
+                
+                // Apply filters
+                const dateFrom = document.getElementById('bankDateFrom').value;
+                const dateTo = document.getElementById('bankDateTo').value;
+                const transactionType = document.getElementById('bankTransactionTypeFilter').value;
+                const bankName = document.getElementById('bankNameFilter').value;
+                const customerName = document.getElementById('bankCustomerNameFilter').value.toLowerCase();
+                
+                let filteredTransactions = transactions.filter(t => t.transactionMode === 'bank');
+                
+                if (dateFrom) {
+                    filteredTransactions = filteredTransactions.filter(t => t.date >= dateFrom);
+                }
+                if (dateTo) {
+                    filteredTransactions = filteredTransactions.filter(t => t.date <= dateTo);
+                }
+                if (transactionType) {
+                    filteredTransactions = filteredTransactions.filter(t => t.bankTransactionType === transactionType);
+                }
+                if (bankName) {
+                    filteredTransactions = filteredTransactions.filter(t => 
+                        t.bankName === bankName || t.fromBankName === bankName || t.toBankName === bankName);
+                }
+                if (customerName) {
+                    filteredTransactions = filteredTransactions.filter(t => 
+                        t.customerName && t.customerName.toLowerCase().includes(customerName));
+                }
+                
+                // Calculate totals
+                let totalCr = 0;
+                let totalDr = 0;
+                
+                const bankOpeningBalance = parseFloat(localStorage.getItem('bankOpeningBalance')) || 0.00;
+                const openingBalanceRow = document.createElement('tr');
+                openingBalanceRow.innerHTML = `
+                    <td>1</td>
+                    <td>Opening Balance</td>
+                    <td>${formatDate(new Date().toISOString().split('T')[0])}</td>
+                    <td>-</td>
+                    <td>${getDayName(new Date().toISOString().split('T')[0])}</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td class="amount">${formatCurrency(bankOpeningBalance)}</td>
+                    <td class="amount">0.00</td>
+                    <td>Opening Balance</td>
+                    <td></td>
+                `;
+                bankTable.appendChild(openingBalanceRow);
+                
+                filteredTransactions.forEach((transaction, index) => {
+                    const row = document.createElement('tr');
+                    
+                    if (transaction.bankTransactionType === 'Transfer') {
+                        row.innerHTML = `
+                            <td>${index + 2}</td>
+                            <td>Bank Transfer</td>
+                            <td>${formatDate(transaction.date)}</td>
+                            <td>${transaction.receiptNo}</td>
+                            <td>${transaction.day}</td>
+                            <td>${transaction.fromBankName} to ${transaction.toBankName}</td>
+                            <td>${transaction.fromAccountNumber} to ${transaction.toAccountNumber}</td>
+                            <td>${transaction.customerName || '-'}</td>
+                            <td>${transaction.chitId || '-'}</td>
+                            <td class="amount">0.00</td>
+                            <td class="amount">${formatCurrency(transaction.amount)}</td>
+                            <td>Bank Transfer</td>
+                            <td>
+                                <button class="edit-btn" data-id="${transaction.id}" data-type="bank">Edit</button>
+                                <button class="delete-btn" data-id="${transaction.id}" data-type="bank">Delete</button>
+                            </td>
+                        `;
+                        totalDr += transaction.amount;
+                    } else {
+                        row.innerHTML = `
+                            <td>${index + 2}</td>
+                            <td>${transaction.ledgerHead}</td>
+                            <td>${formatDate(transaction.date)}</td>
+                            <td>${transaction.receiptNo}</td>
+                            <td>${transaction.day}</td>
+                            <td>${transaction.bankName}</td>
+                            <td>${transaction.accountNumber}</td>
+                            <td>${transaction.customerName || '-'}</td>
+                            <td>${transaction.chitId || '-'}</td>
+                            <td class="amount">${transaction.bankTransactionType === 'Deposit' ? formatCurrency(transaction.amount) : '0.00'}</td>
+                            <td class="amount">${transaction.bankTransactionType === 'Withdrawal' ? formatCurrency(transaction.amount) : '0.00'}</td>
+                            <td>Bank ${transaction.bankTransactionType}</td>
+                            <td>
+                                <button class="edit-btn" data-id="${transaction.id}" data-type="bank">Edit</button>
+                                <button class="delete-btn" data-id="${transaction.id}" data-type="bank">Delete</button>
+                            </td>
+                        `;
+                        
+                        if (transaction.bankTransactionType === 'Deposit') {
+                            totalCr += transaction.amount;
+                        } else if (transaction.bankTransactionType === 'Withdrawal') {
+                            totalDr += transaction.amount;
+                        }
+                    }
+                    
+                    bankTable.appendChild(row);
+                });
+                
+                // Update totals display
+                document.getElementById('bankTotalCr').textContent = `₹${formatCurrency(totalCr + bankOpeningBalance)}`;
+                document.getElementById('bankTotalDr').textContent = `₹${formatCurrency(totalDr)}`;
+                document.getElementById('bankBalance').textContent = `₹${formatCurrency((bankOpeningBalance + totalCr) - totalDr)}`;
+                
+                document.querySelectorAll('#bankTable .delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        deleteTransaction(this.dataset.id);
+                    });
+                });
+                
+                document.querySelectorAll('#bankTable .edit-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        editTransaction(this.dataset.id);
+                    });
+                });
+            }
+
+            // Update combined table
+            function updateCombinedTable() {
+                let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+                const combinedTable = document.querySelector('#combinedTable tbody');
+                combinedTable.innerHTML = '';
+                
+                const cashOpeningBalance = parseFloat(localStorage.getItem('cashOpeningBalance')) || 0.00;
+                const cashOpeningBalanceRow = document.createElement('tr');
+                cashOpeningBalanceRow.innerHTML = `
+                    <td>1</td>
+                    <td>Cash Opening Balance</td>
+                    <td>${formatDate(new Date().toISOString().split('T')[0])}</td>
+                    <td>-</td>
+                    <td>${getDayName(new Date().toISOString().split('T')[0])}</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td class="amount">${formatCurrency(cashOpeningBalance)}</td>
+                    <td class="amount">0.00</td>
+                    <td>Cash Opening Balance</td>
+                `;
+                combinedTable.appendChild(cashOpeningBalanceRow);
+                
+                const bankOpeningBalance = parseFloat(localStorage.getItem('bankOpeningBalance')) || 0.00;
+                const bankOpeningBalanceRow = document.createElement('tr');
+                bankOpeningBalanceRow.innerHTML = `
+                    <td>2</td>
+                    <td>Bank Opening Balance</td>
+                    <td>${formatDate(new Date().toISOString().split('T')[0])}</td>
+                    <td>-</td>
+                    <td>${getDayName(new Date().toISOString().split('T')[0])}</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td class="amount">${formatCurrency(bankOpeningBalance)}</td>
+                    <td class="amount">0.00</td>
+                    <td>Bank Opening Balance</td>
+                `;
+                combinedTable.appendChild(bankOpeningBalanceRow);
+                
+                transactions.forEach((transaction, index) => {
+                    const row = document.createElement('tr');
+                    
+                    if (transaction.transactionMode === 'cash') {
+                        row.innerHTML = `
+                            <td>${index + 3}</td>
+                            <td>${transaction.ledgerHead}</td>
+                            <td>${formatDate(transaction.date)}</td>
+                            <td>${transaction.receiptNo}</td>
+                            <td>${transaction.day}</td>
+                            <td>${transaction.customerName || '-'}</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>${transaction.chitId || '-'}</td>
+                            <td>${transaction.description || '-'}</td>
+                            <td class="amount">${transaction.transactionHead === 'Receipt' ? formatCurrency(transaction.amount) : '0.00'}</td>
+                            <td class="amount">${transaction.transactionHead === 'Payment' ? formatCurrency(transaction.amount) : '0.00'}</td>
+                            <td>Cash ${transaction.transactionHead}</td>
+                        `;
+                    } else {
+                        if (transaction.bankTransactionType === 'Transfer') {
+                            row.innerHTML = `
+                                <td>${index + 3}</td>
+                                <td>Bank Transfer</td>
+                                <td>${formatDate(transaction.date)}</td>
+                                <td>${transaction.receiptNo}</td>
+                                <td>${transaction.day}</td>
+                                <td>${transaction.customerName || '-'}</td>
+                                <td>${transaction.fromBankName} to ${transaction.toBankName}</td>
+                                <td>${transaction.fromAccountNumber} to ${transaction.toAccountNumber}</td>
+                                <td>${transaction.chitId || '-'}</td>
+                                <td>${transaction.description || '-'}</td>
+                                <td class="amount">0.00</td>
+                                <td class="amount">${formatCurrency(transaction.amount)}</td>
+                                <td>Bank Transfer</td>
+                            `;
+                        } else {
+                            row.innerHTML = `
+                                <td>${index + 3}</td>
+                                <td>${transaction.ledgerHead}</td>
+                                <td>${formatDate(transaction.date)}</td>
+                                <td>${transaction.receiptNo}</td>
+                                <td>${transaction.day}</td>
+                                <td>${transaction.customerName || '-'}</td>
+                                <td>${transaction.bankName || '-'}</td>
+                                <td>${transaction.accountNumber || '-'}</td>
+                                <td>${transaction.chitId || '-'}</td>
+                                <td>${transaction.description || '-'}</td>
+                                <td class="amount">${transaction.bankTransactionType === 'Deposit' ? formatCurrency(transaction.amount) : '0.00'}</td>
+                                <td class="amount">${transaction.bankTransactionType === 'Withdrawal' ? formatCurrency(transaction.amount) : '0.00'}</td>
+                                <td>Bank ${transaction.bankTransactionType}</td>
+                            `;
+                        }
+                    }
+                    
+                    combinedTable.appendChild(row);
+                });
+                
+                updateTotals();
+            }
+
+            // Update totals in combined report
+            function updateTotals() {
+                let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+                
+                let totalCr = parseFloat(localStorage.getItem('cashOpeningBalance')) || 0.00;
+                totalCr += parseFloat(localStorage.getItem('bankOpeningBalance')) || 0.00;
+                let totalDr = 0;
+                
+                transactions.forEach(transaction => {
+                    if (transaction.transactionMode === 'cash') {
+                        if (transaction.transactionHead === 'Receipt') {
+                            totalCr += transaction.amount;
+                        } else if (transaction.transactionHead === 'Payment') {
+                            totalDr += transaction.amount;
+                        }
+                    } else {
+                        if (transaction.bankTransactionType === 'Deposit') {
+                            totalCr += transaction.amount;
+                        } else if (transaction.bankTransactionType === 'Withdrawal' || transaction.bankTransactionType === 'Transfer') {
+                            totalDr += transaction.amount;
+                        }
+                    }
+                });
+                
+                document.getElementById('totalCr').textContent = formatCurrency(totalCr);
+                document.getElementById('totalDr').textContent = formatCurrency(totalDr);
+                document.getElementById('closingBalance').textContent = formatCurrency(totalCr - totalDr);
+            }
+
+            // Delete a transaction
+            function deleteTransaction(id) {
+                if (confirm('Are you sure you want to delete this transaction?')) {
+                    let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+                    transactions = transactions.filter(t => t.id !== parseInt(id));
+                    localStorage.setItem('transactions', JSON.stringify(transactions));
+                    
+                    updateCashTable();
+                    updateBankTable();
+                    updateCombinedTable();
+                }
+            }
+
+            // Export to Excel
+            function exportToExcel() {
+                let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+                
+                let csv = 'Sl.No,Transaction Details,Date,Receipt No.,Day,Client/Bank Name,Account No/Chit ID,Description,Cr (₹),Dr. (₹),Transaction Type\n';
+                
+                const cashOpeningBalance = parseFloat(localStorage.getItem('cashOpeningBalance')) || 0.00;
+                csv += `1,Cash Opening Balance,${formatDate(new Date().toISOString().split('T')[0])},-,${getDayName(new Date().toISOString().split('T')[0])},-,-,-,${cashOpeningBalance.toFixed(2)},0.00,Cash Opening Balance\n`;
+                
+                const bankOpeningBalance = parseFloat(localStorage.getItem('bankOpeningBalance')) || 0.00;
+                csv += `2,Bank Opening Balance,${formatDate(new Date().toISOString().split('T')[0])},-,${getDayName(new Date().toISOString().split('T')[0])},-,-,-,${bankOpeningBalance.toFixed(2)},0.00,Bank Opening Balance\n`;
+                
+                transactions.forEach((transaction, index) => {
+                    if (transaction.transactionMode === 'cash') {
+                        csv += `${index + 3},${transaction.ledgerHead},${formatDate(transaction.date)},${transaction.receiptNo},${transaction.day},${transaction.customerName || '-'},${transaction.chitId || '-'},${transaction.description || '-'},`;
+                        csv += `${transaction.transactionHead === 'Receipt' ? transaction.amount.toFixed(2) : '0.00'},`;
+                        csv += `${transaction.transactionHead === 'Payment' ? transaction.amount.toFixed(2) : '0.00'},`;
+                        csv += `Cash ${transaction.transactionHead}\n`;
+                    } else {
+                        if (transaction.bankTransactionType === 'Transfer') {
+                            csv += `${index + 3},Bank Transfer,${formatDate(transaction.date)},${transaction.receiptNo},${transaction.day},`;
+                            csv += `${transaction.fromBankName} to ${transaction.toBankName},`;
+                            csv += `${transaction.fromAccountNumber} to ${transaction.toAccountNumber},`;
+                            csv += `${transaction.description || '-'},`;
+                            csv += `0.00,${transaction.amount.toFixed(2)},Bank Transfer\n`;
+                        } else {
+                            csv += `${index + 3},${transaction.ledgerHead},${formatDate(transaction.date)},${transaction.receiptNo},${transaction.day},`;
+                            csv += `${transaction.bankName},${transaction.accountNumber},`;
+                            csv += `${transaction.description || '-'},`;
+                            csv += `${transaction.bankTransactionType === 'Deposit' ? transaction.amount.toFixed(2) : '0.00'},`;
+                            csv += `${transaction.bankTransactionType === 'Withdrawal' ? transaction.amount.toFixed(2) : '0.00'},`;
+                            csv += `Bank ${transaction.bankTransactionType}\n`;
+                        }
+                    }
+                });
+                
+                let totalCr = parseFloat(localStorage.getItem('cashOpeningBalance')) || 0.00;
+                totalCr += parseFloat(localStorage.getItem('bankOpeningBalance')) || 0.00;
+                let totalDr = 0;
+                
+                transactions.forEach(transaction => {
+                    if (transaction.transactionMode === 'cash') {
+                        if (transaction.transactionHead === 'Receipt') {
+                            totalCr += transaction.amount;
+                        } else if (transaction.transactionHead === 'Payment') {
+                            totalDr += transaction.amount;
+                        }
+                    } else {
+                        if (transaction.bankTransactionType === 'Deposit') {
+                            totalCr += transaction.amount;
+                        } else if (transaction.bankTransactionType === 'Withdrawal' || transaction.bankTransactionType === 'Transfer') {
+                            totalDr += transaction.amount;
+                        }
+                    }
+                });
+                
+                csv += `,,,,,,,Total,${totalCr.toFixed(2)},${totalDr.toFixed(2)},\n`;
+                csv += `,,,,,,,Closing Balance,${(totalCr - totalDr).toFixed(2)},,\n`;
+                
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', `accounting_report_${new Date().toISOString().slice(0, 10)}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            // Helper function to get day name from date
+            function getDayName(dateStr) {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('en-US', { weekday: 'long' });
+            }
+
+            // Helper function to format date
+            function formatDate(dateStr) {
+                const date = new Date(dateStr);
+                return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+            }
+
+            // Helper function to format currency
+            function formatCurrency(amount) {
+                return amount.toLocaleString('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+
+    function logout() {
+      window.location.href = "Login.html.html";
+    }
+         </script>
+</body>
+</html>

@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Jothi Anadham — Management (Full)</title>
+
+<!-- Libraries -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+/* Compact styling */
+*{box-sizing:border-box;margin:0;padding:0;font-family:Segoe UI, Tahoma, Arial}
+body{background:#f3f6fb;color:#123248;padding:16px}
+.wrap{max-width:1200px;margin:0 auto;background:white;padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(2,6,23,0.06)}
+header{text-align:center;padding:10px}
+h1{font-size:22px;color:#0f4c81}
+.nav-tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+.tab{padding:8px 12px;border-radius:999px;background:#eef6ff;color:#0f4c81;font-weight:700;cursor:pointer}
+.tab.active{background:#0f4c81;color:white}
+.grid{display:grid;grid-template-columns:1fr 380px;gap:12px}
+.panel{background:#fff;padding:12px;border-radius:8px;box-shadow:0 4px 14px rgba(18,50,72,0.04)}
+label{display:block;font-weight:700;margin:6px 0}
+input,select,textarea{width:100%;padding:8px;border:1px solid #e6eef7;border-radius:6px;margin-bottom:8px}
+.btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
+.btn-primary{background:#0f4c81;color:white}
+.btn-ghost{background:transparent;border:1px solid #cde0f6;color:#123248}
+.table-scroll{max-height:360px;overflow:auto}
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px;border-bottom:1px solid #f1f5f9;font-size:13px;text-align:left}
+.receipt-small { font-family: monospace; font-size:12px; width:58mm; }
+.toast{position:fixed;right:16px;bottom:16px;background:#0f4c81;color:white;padding:8px 12px;border-radius:8px;display:none}
+.status-ok{color:green;font-weight:700}
+.status-bad{color:red;font-weight:700}
+@media(max-width:980px){ .grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ஜோதி ஆனந்தம் சிட்ஸ் — Management</h1>
+    <div style="color:#6b7785">Customers, Transactions, Collections, Accounts Report</div>
+  </header>
+
+  <!-- LOGIN modal -->
+  <div id="loginModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:999;">
+    <div style="background:white;padding:16px;border-radius:8px;width:380px">
+      <h3 style="margin-bottom:6px">Login</h3>
+      <input id="login-username" placeholder="username (email)" />
+      <input id="login-password" placeholder="password" type="password" />
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+        <button id="loginBtn" class="btn btn-primary">Login</button>
+      </div>
+      <div id="loginMsg" style="color:#c62828;margin-top:8px"></div>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <div style="display:flex;gap:8px" id="navTabs">
+      <div class="tab active" data-target="tab-dashboard">Dashboard</div>
+      <div class="tab" data-target="tab-customers">Customers</div>
+      <div class="tab" data-target="tab-entry">New Entry</div>
+      <div class="tab" data-target="tab-transactions">Transactions</div>
+      <div class="tab" data-target="tab-collections">Collections</div>
+      <div class="tab" data-target="tab-reports">Reports</div>
+      <div class="tab" data-target="tab-accounts">Accounts Report</div>
+    </div>
+    <div id="userInfo" style="display:none"></div>
+  </div>
+
+  <div class="grid">
+    <!-- Left big column -->
+    <div>
+      <!-- Dashboard -->
+      <div class="panel" id="tab-dashboard">
+        <h3>Dashboard</h3>
+        <div style="display:flex;gap:8px;align-items:flex-end">
+          <div style="flex:1">
+            <label>Group</label>
+            <select id="dashboardGroup"><option value="">-- choose group --</option></select>
+          </div>
+          <div style="width:160px">
+            <label>Expected</label>
+            <input type="number" id="expectedMembers" />
+          </div>
+          <div><button id="showDash" class="btn btn-primary">Show</button></div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:12px">
+          <div style="flex:1"><canvas id="dashChart" style="height:180px"></canvas></div>
+          <div style="width:220px">
+            <div style="padding:8px;background:#f6fbff;border-radius:6px">
+              <div id="dashSummary">Select group & expected then Show</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transactions list -->
+      <div class="panel" id="tab-transactions" style="display:none;margin-top:12px">
+        <h3>Transactions</h3>
+        <div style="display:flex;gap:8px;margin-bottom:6px">
+          <input id="txnSearch" placeholder="search..." style="flex:1" />
+          <button id="printLast" class="btn btn-ghost">Print Last Receipt</button>
+        </div>
+        <div class="table-scroll"><table><thead><tr><th>Date</th><th>Cust</th><th>Group</th><th>Amount</th><th>Type</th><th>Receipt</th><th>Made By</th><th>Actions</th></tr></thead><tbody id="txTable"></tbody></table></div>
+      </div>
+
+      <!-- Reports -->
+      <div class="panel" id="tab-reports" style="display:none;margin-top:12px">
+        <h3>Reports</h3>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="month" id="reportMonth" />
+          <button id="runReport" class="btn btn-ghost">Run</button>
+        </div>
+        <div style="margin-top:8px"><canvas id="barChart" style="height:200px"></canvas></div>
+        <div style="margin-top:8px"><canvas id="pieChart" style="height:200px"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Right column -->
+    <div>
+      <!-- Customers -->
+      <div class="panel" id="tab-customers" style="display:none">
+        <h3>Customers</h3>
+        <div style="display:flex;gap:8px">
+          <button id="addCustToggle" class="btn btn-primary">+ Add</button>
+          <input type="file" id="custFile" />
+          <button id="uploadCust" class="btn btn-ghost">Upload</button>
+        </div>
+        <div id="addCustForm" style="display:none;margin-top:8px">
+          <label>ID</label><input id="custId" />
+          <label>Name</label><input id="custName" />
+          <label>Group</label><input id="custGroup" />
+          <label>Phone</label><input id="custPhone" />
+          <div style="display:flex;gap:8px"><button id="saveCust" class="btn btn-primary">Save</button><button id="cancelAddCust" class="btn btn-ghost">Cancel</button></div>
+        </div>
+        <div style="margin-top:8px">
+          <input id="custSearch" placeholder="search customers..." />
+          <div class="table-scroll" style="margin-top:8px"><table><thead><tr><th>ID</th><th>Name</th><th>Group</th><th>Phone</th></tr></thead><tbody id="custTable"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- New Entry -->
+      <div class="panel" id="tab-entry" style="display:none;margin-top:12px">
+        <h3>New Transaction</h3>
+        <label>Date</label><input id="txnDate" type="date" />
+        <label>Customer ID</label><input id="txnCustId" list="custList" />
+        <datalist id="custList"></datalist>
+        <label>Name</label><input id="txnCustName" readonly />
+        <label>Group</label><input id="txnCustGroup" readonly />
+        <label>Amount</label><input id="txnAmount" type="number" />
+        <label>Type</label>
+        <select id="txnType"><option value="">Select</option><option>Cash</option><option>Bank</option><option>UPI</option></select>
+
+<div id="bankBlock" style="display:none">
+  <label>Account</label>
+  <select id="txnAccount">
+    <option value="">-- select account --</option>
+    <option value="Ashok sir AC">Ashok sir AC</option>
+    <option value="Dhanapal AC">Dhanapal AC</option>
+    <option value="Current AC">Current AC</option>
+  </select>
+</div>
+
+<div id="upiBlock" style="display:none">
+  <label>Account</label>
+  <select id="txnAccountUpi">
+    <option value="">-- select account --</option>
+    <option value="Ashok sir AC">Ashok sir AC</option>
+    <option value="Dhanapal AC">Dhanapal AC</option>
+    <option value="Current AC">Current AC</option>
+  </select>
+  <label>UPI ID</label>
+  <input id="txnUpi" placeholder="enter UPI ID" />
+</div>
+        <label>Made By</label>
+        <select id="txnMadeBy"><option>Manikandan</option><option>Balamanikandan</option><option>Yuvaraj</option><option>Vetrimanikandan</option><option>Justice</option></select>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="saveTxn" class="btn btn-primary">Submit</button>
+          <button id="clearTxn" class="btn btn-ghost">Clear</button>
+        </div>
+      </div>
+
+      <!-- Collections quick -->
+      <div class="panel" id="tab-collections" style="display:none;margin-top:12px">
+        <h3>Open Collection Page</h3>
+        <label>Collector</label>
+        <select id="collectionBy"><option value="">-- select --</option></select>
+        <div style="display:flex;gap:8px;margin-top:8px"><button id="openCollection" class="btn btn-primary">Open</button><button id="openLinks" class="btn btn-ghost">Links</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Accounts Report panel (integrated) -->
+<div class="wrap" style="margin-top:14px;">
+  <div class="panel" id="tab-accounts" style="display:none">
+    <h3>Accounts Report</h3>
+    <div style="display:flex;gap:8px;align-items:flex-end">
+      <div style="width:160px">
+        <label>View By</label>
+        <select id="accountsBy">
+          <option value="MadeBy">Collector (MadeBy)</option>
+          <option value="Customer">Customer</option>
+          <option value="All">All</option>
+        </select>
+      </div>
+      <div style="flex:1">
+        <label>Select</label>
+        <select id="accountsFor"><option value="All">All</option></select>
+      </div>
+      <div style="width:120px"><button id="loadAccounts" class="btn btn-primary">Load</button></div>
+    </div>
+
+    <div style="margin-top:12px;overflow:auto">
+      <table><thead><tr><th>Date</th><th>Particular</th><th>Ledger</th><th style="text-align:right">Credit</th><th style="text-align:right">Debit</th><th style="text-align:right">Balance</th></tr></thead>
+      <tbody id="accountsBody"></tbody></table>
+    </div>
+
+    <div style="margin-top:12px">
+      <strong>Closing balance</strong><br/>
+      Cash: <span id="accCash">0.00</span><br/>
+      UPI: <span id="accUpi">0.00</span><br/>
+      Bank: <span id="accBank">0.00</span><br/>
+      TOTAL: <span id="accTotal">0.00</span>
+    </div>
+
+    <div style="margin-top:12px">
+      <h4>Cash Denominations</h4>
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr><th>Note</th><th>Nos</th><th>Amount</th></tr></thead>
+        <tbody>
+          <tr><td>500</td><td><input id="a_d500" type="number" min="0" value="0"></td><td id="a_a500">0</td></tr>
+          <tr><td>200</td><td><input id="a_d200" type="number" min="0" value="0"></td><td id="a_a200">0</td></tr>
+          <tr><td>100</td><td><input id="a_d100" type="number" min="0" value="0"></td><td id="a_a100">0</td></tr>
+          <tr><td>50</td><td><input id="a_d50" type="number" min="0" value="0"></td><td id="a_a50">0</td></tr>
+          <tr><td>20</td><td><input id="a_d20" type="number" min="0" value="0"></td><td id="a_a20">0</td></tr>
+          <tr><td>10</td><td><input id="a_d10" type="number" min="0" value="0"></td><td id="a_a10">0</td></tr>
+          <tr><td>5</td><td><input id="a_d5" type="number" min="0" value="0"></td><td id="a_a5">0</td></tr>
+          <tr><td>2</td><td><input id="a_d2" type="number" min="0" value="0"></td><td id="a_a2">0</td></tr>
+          <tr><td>1</td><td><input id="a_d1" type="number" min="0" value="0"></td><td id="a_a1">0</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:12px">
+      <strong>DENOMINATION TOTAL:</strong> <span id="denomTotalAcc">0.00</span><br/>
+      <strong>Status:</strong> <span id="denomStatus"></span>
+    </div>
+
+    <div style="margin-top:12px">
+      <button id="checkDenomBtn" class="btn btn-primary">Check Denominations</button>
+      <button id="downloadAccPdf" class="btn btn-primary" style="display:none">Download Closing PDF</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Receipt popup (unchanged) -->
+<div id="receiptModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;z-index:9999">
+  <div style="background:white;padding:10px;border-radius:8px;width:300px" class="receipt-small">
+    <div id="receiptHtml"></div>
+    <div style="text-align:center;margin-top:8px"><button id="printReceiptBtn" class="btn btn-primary">Print</button><button id="closeReceipt" class="btn btn-ghost">Close</button></div>
+  </div>
+</div>
+
+<script>
+/* ====== CONFIG ======
+   Paste your deployed Apps Script Web App URL here (including /exec)
+*/
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTzoRxtRpTDRLiaqjIzf6mHF3GHKCk7UdbABNeuQ1wO5pTT9OtyJrJlYbKLB28qdFF/exec";
+
+/* small helpers */
+function el(id){ return document.getElementById(id); }
+function toast(msg,t=2200){ const s=el('toast'); s.textContent=msg; s.style.display='block'; setTimeout(()=>s.style.display='none',t); }
+async function apiGet(params){ const url = SCRIPT_URL + '?' + new URLSearchParams(params); const r = await fetch(url); if(!r.ok) throw new Error('Network'); return r.json(); }
+async function apiPost(obj){ const r = await fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(obj) }); if(!r.ok) throw new Error('Network'); try { return JSON.parse(await r.text()); } catch(e) { return await r.text(); } }
+function getVal(obj,...keys){ if(!obj) return ''; for(const k of keys){ if(obj[k]!==undefined && obj[k]!==null) return obj[k]; const lk=String(k).toLowerCase(); for(const kk in obj){ if(String(kk).toLowerCase()===lk && obj[kk]!==undefined && obj[kk]!==null) return obj[kk]; } } return ''; }
+
+/* State */
+let customers = {}, transactions = [], userRole='', loggedUser=''; let dashChart=null, barChart=null, pieChart=null;
+
+/* ===== LOGIN ===== */
+el('loginBtn').addEventListener('click', async ()=>{
+  const username = el('login-username').value.trim(); const password = el('login-password').value.trim();
+  if(!username || !password){ el('loginMsg').textContent='Enter credentials'; return; }
+  try {
+    const res = await apiPost({ action:'login', Username: username, Password: password });
+    if(res && res.success) {
+      userRole = res.role || ''; loggedUser = res.username || username;
+      el('loginModal').style.display='none'; el('userInfo').style.display='block'; el('userInfo').textContent = loggedUser + ' (' + userRole + ')';
+      toast('Welcome ' + loggedUser);
+      await loadCustomers(); await loadTransactions(); applyRolePermissions();
+      populateDashboardGroups(); populateCollectionsMadeBy();
+      populateAccountsForOptions(); // fill accounts selector
+    } else {
+      el('loginMsg').textContent = res.msg || 'Invalid login';
+    }
+  } catch(e){ console.error(e); el('loginMsg').textContent = 'Login error'; }
+});
+
+/* NAV */
+document.querySelectorAll('.tab').forEach(t=> t.addEventListener('click', ()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  document.querySelectorAll('[id^="tab-"]').forEach(p=>p.style.display='none');
+  const id = t.dataset.target; el(id).style.display='block';
+  if(id === 'tab-customers') loadCustomers();
+  if(id === 'tab-transactions') loadTransactions();
+  if(id === 'tab-reports') loadReport();
+}));
+
+/* Show/hide tabs by role */
+function applyRolePermissions(){
+  const isManagement = userRole === 'Management';
+  const isAdmin = userRole === 'Admin';
+  const isExecutive = userRole === 'Executive';
+  const isViewer = userRole === 'Viewer';
+
+  // Customers: managers/admin/executives/viewers can see
+  document.querySelector("[data-target='tab-customers']").style.display = (isManagement||isAdmin||isExecutive||isViewer) ? '' : 'none';
+
+  // New Entry: managers/admin/executives
+  document.querySelector("[data-target='tab-entry']").style.display = (isManagement||isAdmin||isExecutive) ? '' : 'none';
+
+  // Transactions: everyone except maybe restricted (we allow)
+  document.querySelector("[data-target='tab-transactions']").style.display = (isManagement||isAdmin||isExecutive||isViewer) ? '' : 'none';
+
+  // Reports: management/admin/viewer
+  document.querySelector("[data-target='tab-reports']").style.display = (isManagement||isAdmin||isViewer) ? '' : 'none';
+
+  // Collections: open to all roles
+  document.querySelector("[data-target='tab-collections']").style.display = (isManagement||isAdmin||isExecutive||isViewer) ? '' : 'none';
+
+  // Accounts Report: show to Management/Admin/Executive explicitly (fix you asked)
+  document.querySelector("[data-target='tab-accounts']").style.display = (isManagement||isAdmin||isExecutive) ? '' : 'none';
+}
+
+/* ===== CUSTOMERS ===== */
+el('addCustToggle').addEventListener('click', ()=> el('addCustForm').style.display='block');
+el('cancelAddCust').addEventListener('click', ()=> el('addCustForm').style.display='none');
+el('saveCust').addEventListener('click', async ()=>{
+  const ID = el('custId').value.trim(); if(!ID) return toast('Enter ID');
+  await apiPost({ action:'addOrUpdateCustomer', ID, Name: el('custName').value.trim(), Group: el('custGroup').value.trim(), Phone: el('custPhone').value.trim(), Address: '' });
+  el('custId').value=''; el('custName').value=''; el('custGroup').value=''; el('custPhone').value=''; el('addCustForm').style.display='none';
+  toast('Saved'); await loadCustomers(); populateDashboardGroups(); populateAccountsForOptions();
+});
+
+el('uploadCust').addEventListener('click', async ()=> {
+  const file = el('custFile').files[0]; if(!file) return toast('Pick file');
+  const rd = new FileReader();
+  rd.onload = async (e)=>{
+    let rows=[];
+    if(file.name.endsWith('.csv')) rows = Papa.parse(e.target.result,{header:true,skipEmptyLines:true}).data;
+    else { const wb = XLSX.read(e.target.result,{type:'binary'}); rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''}); }
+    for (let i=0;i<rows.length;i++){
+      const r = rows[i];
+      const ID = r.ID || r.id || r.CustomerID || r.Customer || '';
+      if(!ID) continue;
+      await apiPost({ action:'addOrUpdateCustomer', ID, Name:r.Name||r.name||'', Group:r.Group||r.group||'', Phone:r.Phone||r.phone||'', Address:'' });
+    }
+    toast('Uploaded customers'); await loadCustomers(); populateAccountsForOptions();
+  };
+  if(file.name.endsWith('.csv')) rd.readAsText(file); else rd.readAsBinaryString(file);
+});
+
+async function loadCustomers(){
+  try{
+    const arr = await apiGet({ action:'getCustomers' });
+    customers = {}; el('custTable').innerHTML=''; el('custList').innerHTML='';
+    arr.forEach(c=>{
+      const id = getVal(c,'CustomerID') || '';
+      const name = getVal(c,'Name') || '';
+      const group = getVal(c,'Group') || '';
+      const phone = getVal(c,'Phone') || '';
+      customers[id] = { Name: name, Group: group, Phone: phone };
+      const tr = document.createElement('tr'); tr.innerHTML = `<td>${id}</td><td>${name}</td><td>${group}</td><td>${phone}</td>`;
+      el('custTable').appendChild(tr);
+      const opt = document.createElement('option'); opt.value = id; el('custList').appendChild(opt);
+    });
+  }catch(e){ console.error(e); toast('Could not load customers'); }
+}
+
+/* customer search */
+el('custSearch').addEventListener('input', ()=> {
+  const q = el('custSearch').value.trim().toLowerCase();
+  const rows = el('custTable').querySelectorAll('tr');
+  rows.forEach(tr => { tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none'; });
+});
+
+/* ===== TRANSACTIONS & ENTRY ===== */
+el('txnType').addEventListener('change', ()=> {
+  el('bankBlock').style.display = el('txnType').value === 'Bank' ? 'block' : 'none';
+  el('upiBlock').style.display = el('txnType').value === 'UPI' ? 'block' : 'none';
+});
+el('txnCustId').addEventListener('input', ()=> {
+  const id = el('txnCustId').value.trim();
+  if (customers[id]) { el('txnCustName').value = customers[id].Name; el('txnCustGroup').value = customers[id].Group; } else { el('txnCustName').value=''; el('txnCustGroup').value=''; }
+});
+
+el('saveTxn').addEventListener('click', async ()=>{
+  const date = el('txnDate').value || new Date().toISOString().slice(0,10);
+  const CustomerID = el('txnCustId').value.trim(); if(!CustomerID) return toast('Enter Customer ID');
+  const payload = {
+    action:'addTransaction',
+    Date: date,
+    CustomerID,
+    Name: el('txnCustName').value||'',
+    Group: el('txnCustGroup').value||'',
+    Amount: el('txnAmount').value||'0',
+    Type: el('txnType').value||'',
+    Account: el('txnType').value==='Bank'? el('txnAccount').value : '',
+    UPIID: el('txnUpi').value || '',
+    MadeBy: el('txnMadeBy').value || ''
+  };
+  try {
+    const res = await apiPost(payload);
+    if (res && res.success) {
+      toast('Txn saved'); await loadTransactions(); populateCollectionsMadeBy(); populateAccountsForOptions();
+      const txnObj = { TxnID: res.TxnID || '', ReceiptNo: res.ReceiptNo || '', Date: payload.Date, CustomerID: payload.CustomerID, Name: payload.Name, Group: payload.Group, Amount: payload.Amount, Type: payload.Type, Account: payload.Account, UPIID: payload.UPIID, MadeBy: payload.MadeBy };
+      showReceipt(txnObj);
+      el('txnDate').value=''; el('txnCustId').value=''; el('txnCustName').value=''; el('txnCustGroup').value=''; el('txnAmount').value=''; el('txnType').value=''; el('txnAccount').value=''; el('txnUpi').value='';
+    } else {
+      toast(res.msg || 'Save failed');
+    }
+  } catch (e) { console.error(e); toast('Save error'); }
+});
+
+/* upload txns */
+document.getElementById('txnType').addEventListener('change',()=>{});
+document.getElementById('clearTxn').addEventListener('click',()=>{ el('txnDate').value=''; el('txnCustId').value=''; el('txnCustName').value=''; el('txnCustGroup').value=''; el('txnAmount').value=''; el('txnType').value=''; el('txnAccount').value=''; el('txnUpi').value=''; });
+
+/* load & render transactions */
+async function loadTransactions(){
+  try {
+    const arr = await apiGet({ action:'getTransactions' });
+    transactions = arr || [];
+    renderTransactions(transactions);
+    populateCollectionsMadeBy();
+    populateAccountsForOptions();
+  } catch(e){ console.error(e); toast('Could not load transactions'); }
+}
+
+function renderTransactions(arr){
+  el('txTable').innerHTML='';
+  const q = el('txnSearch').value.trim().toLowerCase();
+  for (let i = arr.length-1; i>=0; i--) {
+    const t = arr[i];
+    const date = getVal(t,'Date')||'';
+    const cust = (getVal(t,'CustomerID')||'') + ' - ' + (getVal(t,'Name')||'');
+    const group = getVal(t,'Group') || '';
+    const amt = getVal(t,'Amount') || '';
+    const type = getVal(t,'Type') || '';
+    const receipt = getVal(t,'ReceiptNo') || '';
+    const madeBy = getVal(t,'MadeBy') || '';
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${date}</td>
+      <td>${cust}</td>
+      <td>${group}</td>
+      <td>${amt}</td>
+      <td>${type}</td>
+      <td>${receipt}</td>
+      <td>${madeBy}</td>
+      <td><button class="btn btn-ghost" onclick='showReceiptById("${getVal(t,"TxnID","id","TxnId")}")'>Print</button></td>
+    `;
+    if(q){
+      if(!row.textContent.toLowerCase().includes(q)) continue;
+    }
+    el('txTable').appendChild(row);
+  }
+}
+el('txnSearch').addEventListener('input', ()=> renderTransactions(transactions));
+
+/* Print last / by id */
+el('printLast').addEventListener('click', ()=> {
+  if (!transactions || transactions.length===0) return toast('No transactions');
+  showReceipt(transactions[transactions.length-1]);
+});
+window.showReceiptById = function(id){
+  const t = transactions.find(x => getVal(x,'TxnID','id','TxnId') === id);
+  if (!t) return toast('Txn not found');
+  showReceipt(t);
+};
+
+/* Receipt UI */
+function showReceipt(txn){
+  const html = `
+    <div style="text-align:center;font-weight:700">ஜோதி ஆனந்தம் சிட்ஸ் (P) லிமிட்</div>
+    <div style="font-size:12px;margin-top:6px">AMC Complex, Madurai Road, Manappari - 621306<br>Phone: 8072048664</div>
+    <hr/>
+    <div><strong>Receipt No:</strong> ${getVal(txn,'ReceiptNo')||''}</div>
+    <div><strong>Date:</strong> ${getVal(txn,'Date')||''}</div>
+    <div><strong>Customer:</strong> ${getVal(txn,'CustomerID')||''} - ${getVal(txn,'Name')||''}</div>
+    <div><strong>Group:</strong> ${getVal(txn,'Group')||''}</div>
+    <div style="margin-top:6px"><strong>Amount:</strong> ₹${getVal(txn,'Amount')||''}</div>
+    <div><strong>Type:</strong> ${getVal(txn,'Type')||''}</div>
+    <div style="margin-top:8px;text-align:center;font-size:12px">Thanks!</div>
+  `;
+  el('receiptHtml').innerHTML = html;
+  el('receiptModal').style.display='flex';
+}
+el('closeReceipt').addEventListener('click', ()=> el('receiptModal').style.display='none');
+el('printReceiptBtn').addEventListener('click', ()=> {
+  const html = el('receiptHtml').innerHTML;
+  const w = window.open('','_blank','width=300,height=600');
+  w.document.write(`<html><head><title>Receipt</title><style>body{font-family:monospace;font-size:12px;width:58mm}</style></head><body>${html}<script>window.print();window.onafterprint=function(){window.close();}<\/script></body></html>`);
+  w.document.close();
+});
+
+/* Collections */
+function populateCollectionsMadeBy(){
+  const sel = el('collectionBy'); sel.innerHTML = '<option value="">-- select --</option>';
+  const names = new Set();
+  transactions.forEach(t=> { const m = getVal(t,'MadeBy')||''; if(m) names.add(m); });
+  Array.from(names).sort().forEach(n => { const o=document.createElement('option'); o.value=n; o.textContent=n; sel.appendChild(o); });
+}
+el('openCollection').addEventListener('click', ()=> {
+  const maker = el('collectionBy').value; if(!maker) return toast('Select collector');
+  window.open('collection_report.html?maker=' + encodeURIComponent(maker), '_blank');
+});
+el('openLinks').addEventListener('click', ()=> window.open('collection_links.html','_blank'));
+
+/* Reports */
+el('runReport').addEventListener('click', loadReport);
+async function loadReport(){
+  try {
+    const all = await apiGet({ action:'getTransactions' });
+    const txns = (all||[]).map(t => ({ ...t, amountNum: parseFloat(getVal(t,'Amount'))||0 }));
+    const byGroup = {};
+    txns.forEach(t => { const g = getVal(t,'Group')||'Other'; byGroup[g] = (byGroup[g]||0) + (parseFloat(getVal(t,'Amount'))||0); });
+    // bar (12 months)
+    const now = new Date(); const months=[]; const labels=[]; const map={};
+    for (let i=11;i>=0;i--){ const d=new Date(now.getFullYear(), now.getMonth()-i,1); const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; months.push(k); labels.push(d.toLocaleString('default',{month:'short'})+' '+String(d.getFullYear()).slice(2)); map[k]=0; }
+    txns.forEach(t=>{ const ds=getVal(t,'Date')||''; const parsed=parseDateLike(ds); if(parsed){ const k=`${parsed.getFullYear()}-${String(parsed.getMonth()+1).padStart(2,'0')}`; if(map[k]!==undefined) map[k]+= parseFloat(getVal(t,'Amount'))||0; } });
+    const barData = months.map(k=> map[k]||0);
+    const barCtx = el('barChart').getContext('2d'); if(barChart) barChart.destroy();
+    barChart = new Chart(barCtx,{ type:'bar', data:{ labels, datasets:[{ label:'Monthly', data: barData }] }, options:{ maintainAspectRatio:false }});
+    // pie
+    const pLabels=Object.keys(byGroup); const pVals=pLabels.map(k=>byGroup[k]);
+    const pieCtx = el('pieChart').getContext('2d'); if(pieChart) pieChart.destroy();
+    pieChart = new Chart(pieCtx, { type:'pie', data:{ labels: pLabels, datasets:[{ data: pVals }] }});
+  } catch(e){ console.error(e); toast('Report error'); }
+}
+
+/* parse "DD-MM-YY | hh:mm" or ISO */
+function parseDateLike(s){
+  if(!s) return null;
+  const m = String(s).match(/^(\d{2})-(\d{2})-(\d{2})\s*\|\s*(\d{2}):(\d{2})/);
+  if(m){ const dd=parseInt(m[1],10), mm=parseInt(m[2],10)-1, yy=2000+parseInt(m[3],10), hh=parseInt(m[4],10), min=parseInt(m[5],10); return new Date(yy,mm,dd,hh,min); }
+  const d = new Date(s); if(!isNaN(d)) return d; return null;
+}
+
+/* utilities */
+function toCSV(rows, headers){ const arr=[headers.join(',')]; for(const r of rows){ arr.push(headers.map(h=>(''+(r[h]||'')).replace(/"/g,'""')).map(x=>`"${x}"`).join(',')); } return arr.join('\n'); }
+
+/* INIT after login functions will be called */
+
+/* ====== ACCOUNTS REPORT (integrated) ====== */
+async function populateAccountsForOptions(){
+  // populate accountsFor dropdown for both MadeBy and Customers
+  try {
+    const tx = await apiGet({ action:'getTransactions' });
+    const custs = await apiGet({ action:'getCustomers' });
+    const madeBySet = new Set(); const custSet = new Map();
+    tx.forEach(t=> { const m = getVal(t,'MadeBy') || ''; if(m) madeBySet.add(m); });
+    custs.forEach(c=> { const id = getVal(c,'CustomerID')||''; const nm = getVal(c,'Name')||''; if(id) custSet.set(id, nm); });
+    // if accountsBy currently 'MadeBy', set accountsFor options accordingly
+    fillAccountsForOptions();
+  } catch(e){ console.error(e); }
+}
+
+function fillAccountsForOptions() {
+  const by = el('accountsBy').value;
+  const sel = el('accountsFor');
+  sel.innerHTML = '';
+  if(by === 'MadeBy') {
+    const names = new Set(); transactions.forEach(t=> { const m = getVal(t,'MadeBy')||''; if(m) names.add(m); });
+    const optAll = document.createElement('option'); optAll.value='All'; optAll.textContent='All'; sel.appendChild(optAll);
+    Array.from(names).sort().forEach(n=> { const o=document.createElement('option'); o.value=n; o.textContent=n; sel.appendChild(o); });
+  } else if(by === 'Customer') {
+    const optAll = document.createElement('option'); optAll.value='All'; optAll.textContent='All'; sel.appendChild(optAll);
+    Object.keys(customers).sort().forEach(id=> { const o=document.createElement('option'); o.value=id; o.textContent = id + ' - ' + (customers[id].Name||''); sel.appendChild(o); });
+  } else { // All
+    const o=document.createElement('option'); o.value='All'; o.textContent='All'; sel.appendChild(o);
+  }
+}
+
+el('accountsBy').addEventListener('change', fillAccountsForOptions);
+el('loadAccounts').addEventListener('click', ()=> {
+  const by = el('accountsBy').value; const forVal = el('accountsFor').value || 'All';
+  loadAccountsReport(by, forVal);
+});
+
+async function loadAccountsReport(by, forVal) {
+  try{
+    const res = await apiGet({ action:'getLedger', by: by, for: forVal });
+    // res = { rows: [...], totals: {...} }
+    el('accountsBody').innerHTML = '';
+    const rows = res.rows || [];
+    rows.forEach(r=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.Date}</td><td>${r.Particular}</td><td>${r.Ledger}</td><td style="text-align:right">${r.Credit}</td><td style="text-align:right">${r.Debit}</td><td style="text-align:right">${r.Balance}</td>`;
+      el('accountsBody').appendChild(tr);
+    });
+    const totals = res.totals || { cash:0, upi:0, bank:0, totalPayments:0, closingBalance:0 };
+    el('accCash').textContent = Number(totals.cash||0).toFixed(2);
+    el('accUpi').textContent = Number(totals.upi||0).toFixed(2);
+    el('accBank').textContent = Number(totals.bank||0).toFixed(2);
+    el('accTotal').textContent = Number(totals.totalPayments||0).toFixed(2);
+    // reset denom inputs
+    ['500','200','100','50','20','10','5','2','1'].forEach(v => { el('a_d'+v).value = 0; el('a_a'+v).textContent = '0'; });
+    el('denomTotalAcc').textContent = '0.00'; el('denomStatus').textContent=''; el('downloadAccPdf').style.display='none';
+  } catch(e){ console.error(e); toast('Accounts load failed'); }
+}
+
+/* Denomination calc for Accounts */
+function calcDenomAcc(){
+  const denoms = [500,200,100,50,20,10,5,2,1]; let sum=0;
+  denoms.forEach(v=>{
+    const n = parseInt(el('a_d'+v).value) || 0; const amt = n * v;
+    el('a_a'+v).textContent = amt.toFixed(2);
+    sum += amt;
+  });
+  el('denomTotalAcc').textContent = sum.toFixed(2);
+  return sum;
+}
+['500','200','100','50','20','10','5','2','1'].forEach(v=> el('a_d'+v).addEventListener('input', calcDenomAcc));
+
+el('checkDenomBtn').addEventListener('click', ()=> {
+  const cash = parseFloat(el('accCash').textContent) || 0;
+  const denom = calcDenomAcc();
+  if(Math.round(cash) === Math.round(denom)) {
+    el('denomStatus').innerHTML = '<span class="status-ok">Tally ✓</span>';
+    el('downloadAccPdf').style.display = 'inline-block';
+  } else {
+    const diff = denom - cash;
+    el('denomStatus').innerHTML = '<span class="status-bad">Mismatch: '+diff.toFixed(2)+'</span>';
+    el('downloadAccPdf').style.display = 'none';
+  }
+});
+
+/* Download Closing PDF (only summary + denomination) */
+el('downloadAccPdf').addEventListener('click', ()=> {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:'pt', format:'a4'});
+  let y = 40;
+  doc.setFontSize(14); doc.text('Accounts — Closing Summary', 40, y); y += 20;
+  doc.setFontSize(11);
+  doc.text('Cash: ' + el('accCash').textContent, 40, y); y += 16;
+  doc.text('UPI: ' + el('accUpi').textContent, 40, y); y += 16;
+  doc.text('Bank: ' + el('accBank').textContent, 40, y); y += 16;
+  doc.text('TOTAL: ' + el('accTotal').textContent, 40, y); y += 24;
+  doc.text('Cash Denominations:', 40, y); y += 16;
+  const denoms = [500,200,100,50,20,10,5,2,1];
+  denoms.forEach(v => {
+    const nos = el('a_d'+v).value || 0;
+    const amt = el('a_a'+v).textContent || '0';
+    doc.text(`${v} x ${nos} = ${amt}`, 40, y);
+    y += 14;
+  });
+  y += 10;
+  doc.text('Denomination Total: ' + el('denomTotalAcc').textContent, 40, y);
+  doc.save('Accounts_Closing.pdf');
+});
+
+/* Populate dashboard groups */
+function populateDashboardGroups(){
+  const sel=el('dashboardGroup'); sel.innerHTML = '<option value="">-- choose group --</option>';
+  const groups = new Set();
+  Object.values(customers).forEach(c=> { if(c.Group) groups.add(c.Group); });
+  Array.from(groups).sort().forEach(g=> { const o=document.createElement('option'); o.value=g; o.textContent=g; sel.appendChild(o); });
+}
+
+/* Dashboard logic */
+el('showDash').addEventListener('click', ()=> {
+  const group = el('dashboardGroup').value; const expected = parseInt(el('expectedMembers').value) || 0;
+  if(!group) return toast('Select group');
+  const list = Object.values(customers).filter(c=> c.Group === group);
+  const count = list.length;
+  const full = Math.min(count, expected);
+  const vacant = Math.max(0, expected - count);
+  const nill = (count === 0) ? expected : 0;
+  el('dashSummary').innerHTML = `<div><strong>Group:</strong> ${group}</div><div><strong>Members:</strong> ${count} / ${expected}</div>`;
+  const ctx = el('dashChart').getContext('2d'); if(dashChart) dashChart.destroy();
+  const labels = []; const data=[]; const bg=[];
+  if(full>0){ labels.push('Full'); data.push(full); bg.push('green'); }
+  if(vacant>0){ labels.push('Vacant'); data.push(vacant); bg.push('orange'); }
+  if(nill>0){ labels.push('Nill'); data.push(nill); bg.push('red'); }
+  if(data.length===0){ labels.push('No Data'); data.push(1); bg.push('#eee'); }
+  dashChart = new Chart(ctx,{ type:'doughnut', data:{ labels, datasets:[{ data, backgroundColor: bg }] }, options:{ maintainAspectRatio:false }});
+});
+
+/* helpers for collections/accounts population */
+function populateCollectionsMadeBy(){
+  const sel = el('collectionBy'); sel.innerHTML = '<option value="">-- select --</option>';
+  const names = new Set(); transactions.forEach(t=> { const m = getVal(t,'MadeBy')||''; if(m) names.add(m); });
+  Array.from(names).sort().forEach(n => { const o=document.createElement('option'); o.value=n; o.textContent=n; sel.appendChild(o); });
+}
+
+/* ensure accountsFor options initial fill when transactions/customers load */
+function populateAccountsForOptions(){
+  fillAccountsForOptions();
+}
+
+/* Kickoff load */
+(async function init(){
+  // nothing until login
+})();
+
+</script>
+</body>
+</html>

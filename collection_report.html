@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Collection Report</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+<style>
+body{font-family:Segoe UI,Arial,sans-serif;background:#f6f9fc;padding:20px;color:#123}
+h2{text-align:center;color:#0f4c81}
+table{width:100%;border-collapse:collapse;margin-top:12px}
+th,td{padding:6px;border-bottom:1px solid #ddd;font-size:13px;text-align:left}
+tfoot td{font-weight:bold}
+.status-ok{color:green;font-weight:700}
+.status-bad{color:red;font-weight:700}
+input[type=number]{width:80px}
+</style>
+</head>
+<body>
+<h2 id="title">Collection Report</h2>
+<table>
+<thead>
+<tr><th>Date</th><th>Customer</th><th>Group</th><th>Amount</th><th>Type</th><th>Receipt</th><th>Made By</th></tr>
+</thead>
+<tbody id="tbody"></tbody>
+<tfoot>
+<tr><td colspan="3">Total Collection:</td><td id="total">0</td><td colspan="3"></td></tr>
+<tr><td colspan="3">Cash:</td><td id="cash">0</td><td colspan="3"></td></tr>
+<tr><td colspan="3">Bank:</td><td id="bank">0</td><td colspan="3"></td></tr>
+<tr><td colspan="3">UPI:</td><td id="upi">0</td><td colspan="3"></td></tr>
+</tfoot>
+</table>
+
+<!-- Denomination Section -->
+<h3 style="margin-top:20px;color:#0f4c81">Cash Denomination</h3>
+<table>
+<thead><tr><th>Note</th><th>Nos</th><th>Amount</th></tr></thead>
+<tbody id="denomBody">
+<tr><td>500</td><td><input type="number" id="d500" value="0" min="0"></td><td id="a500">0</td></tr>
+<tr><td>200</td><td><input type="number" id="d200" value="0" min="0"></td><td id="a200">0</td></tr>
+<tr><td>100</td><td><input type="number" id="d100" value="0" min="0"></td><td id="a100">0</td></tr>
+<tr><td>50</td><td><input type="number" id="d50" value="0" min="0"></td><td id="a50">0</td></tr>
+<tr><td>20</td><td><input type="number" id="d20" value="0" min="0"></td><td id="a20">0</td></tr>
+<tr><td>10</td><td><input type="number" id="d10" value="0" min="0"></td><td id="a10">0</td></tr>
+<tr><td>5</td><td><input type="number" id="d5" value="0" min="0"></td><td id="a5">0</td></tr>
+<tr><td>2</td><td><input type="number" id="d2" value="0" min="0"></td><td id="a2">0</td></tr>
+<tr><td>1</td><td><input type="number" id="d1" value="0" min="0"></td><td id="a1">0</td></tr>
+</tbody>
+</table>
+<p><strong>Denomination Total:</strong> <span id="denomTotal">0</span></p>
+<p><strong>Status:</strong> <span id="denomStatus"></span></p>
+<button id="checkBtn">Check Tally</button>
+<button id="downloadPdf" style="display:none">Download PDF</button>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTzoRxtRpTDRLiaqjIzf6mHF3GHKCk7UdbABNeuQ1wO5pTT9OtyJrJlYbKLB28qdFF/exec"; // 🔹 Replace with deployed Apps Script WebApp URL
+function getVal(obj,...keys){ if(!obj) return ''; for(const k of keys){ if(obj[k]!=null) return obj[k]; const lk=String(k).toLowerCase(); for(const kk in obj){ if(String(kk).toLowerCase()===lk) return obj[kk]; } } return ''; }
+async function apiGet(params){ const url = SCRIPT_URL + '?' + new URLSearchParams(params); const r = await fetch(url); return r.json(); }
+
+let cashTotal=0, makerName="", tableData=[];
+
+(async function(){
+  makerName=new URLSearchParams(location.search).get('maker')||'';
+  document.getElementById('title').textContent=makerName+" — Collection Report";
+
+  const txns=await apiGet({ action:'getTransactions' });
+  const list=(txns||[]).filter(t=>(getVal(t,'MadeBy')||'')===makerName);
+  let tot=0,bank=0,upi=0; cashTotal=0;
+
+  list.forEach(t=>{
+    const amt=parseFloat(getVal(t,'Amount'))||0; tot+=amt;
+    const type=(getVal(t,'Type')||'').toLowerCase();
+    if(type==='cash') cashTotal+=amt; else if(type==='bank') bank+=amt; else if(type==='upi') upi+=amt;
+
+    const rowData=[
+      getVal(t,'Date'),
+      (getVal(t,'CustomerID')||'')+" - "+(getVal(t,'Name')||''),
+      getVal(t,'Group'),
+      amt.toFixed(2),
+      getVal(t,'Type'),
+      getVal(t,'ReceiptNo'),
+      getVal(t,'MadeBy')
+    ];
+    tableData.push(rowData);
+
+    const tr=document.createElement('tr');
+    tr.innerHTML=rowData.map(c=>`<td>${c}</td>`).join('');
+    document.getElementById('tbody').appendChild(tr);
+  });
+
+  document.getElementById('total').textContent=tot.toFixed(2);
+  document.getElementById('cash').textContent=cashTotal.toFixed(2);
+  document.getElementById('bank').textContent=bank.toFixed(2);
+  document.getElementById('upi').textContent=upi.toFixed(2);
+})();
+
+// ===== Denomination check =====
+function calcDenom(){
+  const notes=[500,200,100,50,20,10,5,2,1]; let sum=0;
+  notes.forEach(v=>{
+    const n=parseInt(document.getElementById('d'+v).value)||0;
+    const amt=n*v;
+    document.getElementById('a'+v).textContent=amt.toFixed(2);
+    sum+=amt;
+  });
+  document.getElementById('denomTotal').textContent=sum.toFixed(2);
+  return sum;
+}
+document.querySelectorAll('#denomBody input').forEach(inp=> inp.addEventListener('input', calcDenom));
+
+document.getElementById('checkBtn').addEventListener('click', ()=>{
+  const denom=calcDenom();
+  if(Math.round(denom)===Math.round(cashTotal)){
+    document.getElementById('denomStatus').innerHTML='<span class="status-ok">Tally ✓</span>';
+    document.getElementById('downloadPdf').style.display='inline-block';
+  }else{
+    const diff=denom-cashTotal;
+    document.getElementById('denomStatus').innerHTML='<span class="status-bad">Mismatch: '+diff.toFixed(2)+'</span>';
+    document.getElementById('downloadPdf').style.display='none';
+  }
+});
+
+// ===== PDF Download =====
+document.getElementById('downloadPdf').addEventListener('click', ()=>{
+  const { jsPDF }=window.jspdf;
+  const doc=new jsPDF({unit:'pt',format:'a4'});
+  let y=40;
+
+  doc.setFontSize(14);
+  doc.text(makerName+" — Collection Report",40,y); y+=20;
+
+  // Transaction Table
+  doc.autoTable({
+    startY:y,
+    head:[["Date","Customer","Group","Amount","Type","Receipt","Made By"]],
+    body:tableData,
+    theme:'grid',
+    styles:{fontSize:8,cellPadding:3}
+  });
+  y=doc.lastAutoTable.finalY+20;
+
+  // Totals
+  doc.setFontSize(11);
+  doc.text("Total Collection: "+document.getElementById('total').textContent,40,y); y+=16;
+  doc.text("Cash: "+document.getElementById('cash').textContent,40,y); y+=16;
+  doc.text("Bank: "+document.getElementById('bank').textContent,40,y); y+=16;
+  doc.text("UPI: "+document.getElementById('upi').textContent,40,y); y+=24;
+
+  // Denomination Table
+  const denomRows=[];
+  [500,200,100,50,20,10,5,2,1].forEach(v=>{
+    const nos=document.getElementById('d'+v).value||"0";
+    const amt=document.getElementById('a'+v).textContent||"0";
+    denomRows.push([v,nos,amt]);
+  });
+  doc.autoTable({
+    startY:y,
+    head:[["Note","Nos","Amount"]],
+    body:denomRows,
+    theme:'grid',
+    styles:{fontSize:9}
+  });
+  y=doc.lastAutoTable.finalY+20;
+  doc.text("Denomination Total: "+document.getElementById('denomTotal').textContent,40,y); y+=40;
+
+  // Signatures
+  const pageWidth=doc.internal.pageSize.getWidth();
+  doc.text("Staff Sign",40,y);
+  doc.text("Manager Sign",pageWidth/2-40,y);
+  doc.text("Accountant Sign",pageWidth-150,y);
+
+  doc.save("Collection_Report.pdf");
+});
+</script>
+</body>
+</html>

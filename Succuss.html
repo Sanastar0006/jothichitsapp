@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jothi Anandham Chits</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            padding: 20px;
+        }
+        
+        .slideshow-container {
+            position: relative;
+            width: 90%;
+            max-width: 1200px;
+            height: 85vh;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            overflow: hidden;
+            background: #fff;
+        }
+        
+        .mySlides {
+            display: none;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding: 40px;
+            background: linear-gradient(to bottom right, #f9f9f9, #ffffff);
+            text-align: center;
+            animation: fade 1s ease-in-out;
+        }
+        
+        @keyframes fade {
+            from {opacity: 0.4}
+            to {opacity: 1}
+        }
+        
+        .slide-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #1a2a6c;
+            font-size: 3.5rem;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            color: #b21f1f;
+            font-size: 2.5rem;
+            margin: 20px 0;
+            border-bottom: 3px solid #fdbb2d;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #1a2a6c;
+            font-size: 2rem;
+            margin: 18px 0;
+        }
+        
+        p, li {
+            font-size: 1.5rem;
+            line-height: 1.7;
+            margin: 12px 0;
+            color: #333;
+        }
+        
+        ul {
+            text-align: left;
+            margin-left: 40px;
+            margin-top: 20px;
+            max-width: 90%;
+        }
+        
+        li {
+            margin-bottom: 15px;
+        }
+        
+        .logo {
+            font-size: 4.5rem;
+            font-weight: bold;
+            color: #1a2a6c;
+            margin-bottom: 25px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        .schemes {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .scheme {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            width: 30%;
+            min-width: 250px;
+            margin: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+        }
+        
+        .scheme:hover {
+            transform: translateY(-5px);
+        }
+        
+        .thankyou {
+            font-size: 4.5rem;
+            color: #b21f1f;
+            animation: pulse 1.5s infinite;
+            margin-bottom: 30px;
+        }
+        
+        @keyframes pulse {
+            0% {transform: scale(1);}
+            50% {transform: scale(1.1);}
+            100% {transform: scale(1);}
+        }
+        
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 8px;
+            background: linear-gradient(to right, #1a2a6c, #b21f1f);
+            width: 100%;
+            animation: progress 5s linear;
+        }
+        
+        @keyframes progress {
+            0% {width: 0%;}
+            100% {width: 100%;}
+        }
+        
+        .navigation {
+            position: absolute;
+            bottom: 25px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 100;
+        }
+        
+        .dot {
+            cursor: pointer;
+            height: 18px;
+            width: 18px;
+            margin: 0 8px;
+            background-color: #bbb;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.3s ease, transform 0.3s;
+        }
+        
+        .dot:hover {
+            transform: scale(1.3);
+        }
+        
+        .active, .dot:hover {
+            background-color: #b21f1f;
+        }
+        
+        .controls {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            z-index: 100;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .controls button {
+            background: linear-gradient(to bottom, #1a2a6c, #2c3e99);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+        
+        .controls button:hover {
+            background: linear-gradient(to bottom, #b21f1f, #d35400);
+            transform: translateY(-2px);
+        }
+        
+        .interval-display {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .image-slide {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .image-container {
+            max-width: 90%;
+            max-height: 70%;
+            margin: 20px 0;
+            border: 3px solid #1a2a6c;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .image-title {
+            font-size: 2rem;
+            color: #1a2a6c;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .slideshow-container {
+                width: 95%;
+                height: 80vh;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            h2 {
+                font-size: 2rem;
+            }
+            
+            .logo {
+                font-size: 3rem;
+            }
+            
+            .scheme {
+                width: 100%;
+                margin: 10px 0;
+            }
+            
+            .thankyou {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slideshow-container">
+        <!-- Interval display -->
+        <div class="interval-display">Slide Interval: 5 seconds</div>
+        
+        <!-- Controls -->
+        <div class="controls">
+            <button onclick="pauseSlides()">Pause</button>
+            <button onclick="resumeSlides()">Resume</button>
+            <button onclick="prevSlide()">Previous</button>
+            <button onclick="nextSlide()">Next</button>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="mySlides">
+            <div class="slide-content">
+                <div class="logo">Jothi Anandham Chits</div>
+                <p>Manapparai, Trichy</p>
+            </div>
+            <div class="progress-bar"></div>
+        </div>
+
+        <!-- Slide 2: About Us -->
+        <div class="mySlides">
+            <div class="slide-content">
+                <h2>About Us</h2>
+                <p>Mr. JM.ASHOK-BME, Manageing Director of Jothi Anandham Chits Private Limited</p>
+                <p>I Started my career in Chits Funds as a collection executive with a experience 5 years,With an Experience in a Chits Funds i had started my
+venture Jothi Anandham Chits
+</p>
+            </div>
+            <div class="progress-bar"></div>
+        </div>
+
+        <!-- Slide 3: Career -->
+        <div class="mySlides">
+            <div class="slide-content">
+                <h2>My Career</h2>
+                <p>After Covid, I returned to my hometown and started my career in Chits Funds as a collection executive with 5 years experience</p>
+                <p>With experience in Chits Funds, I started my venture Jothi Anandham Chits</p>
+            </div>
+            <div class="progress-bar"></div>
+        </div>
+
+        <!-- Slide 4: What is Chits -->
+        <div class="mySlides">
+            <div class="slide-content">
+                <h2>What is Chits?</h2>
+                <p>Chit funds are a popular savings and borrowing mechanism in India</p>
+                <p>They combine savings and credit in a single scheme</p>
+                <p>Members contribute periodic installments, and each member gets a chance to receive the prize amount through auctions</p>
+            </div>
+            <div class="progress-bar"></div>
+        </div>
+
+        <!-- Slide 5: Why Choose Us -->
+        <div class="mySlides">
+            <div class="slide-content">
+                <h2>Why Choose Jothi Anandham Chits</h2>
+                <ul>
+                    <li>We are Government Certified Chits</li>
+                    <li>Field Investigation for both Customer and Staffs</li>
+                    <li>Transparency on date settlements</li>
+                    <li>Documentation submission procedures</li>
+                    <li>Door to Door service for collection and withdrawals</li>
+                    <li>Collection options in daily, monthly, weekly</li>
+                    <li>This is our only business to commerce</li>
+                </ul>
+            </div>
+            <div class="progress-bar"></div>
+        </div>
+
+        <!-- Slide 6: Schemes -->
+        <div class="mySlides">
+            <div class="slide-content">
+                <h2>Our Schemes</h2>
+                <div class="schemes">
+                    <div class="scheme">
+                        <h3>12 Month Scheme</h3>
+                        <p>Short-term savings plan with quick returns</p>
+                    </div>
+                    <div class="scheme">
+                        <h3>20 Month Scheme</h3>
+                        <p>Medium-term plan for higher savings</p>
+                    </div>
+                    <div class="scheme">
+                        <h3>20 Month Scheme</h3>
+                        <p>Another medium-term option with flexible terms</p>
+                    </div>
+                </div>
+            </div>
+            <div class="progress-bar"></div>
+        </div>
+
+        <!-- Slide 7: Settlement Image -->
+        <div class="mySlides">
+            <div class="slide-content image-slide">
+                <h2>Our Settlement Process</h2>
+                <div class="image-container">
+                    <!-- Replace with your actual image path -->
+                    <img src="C:\Users\Mathivathini\Downloads\ChatGPT Image Sep 1, 2025, 12_35_40 PM.png">
+                </div>
+                <p class="image-title">Transparent and Efficient Settlement</p>
+            </div>
+            <div class="progress-bar"></div>
+        </div>
+
+        <!-- Slide 8: Chit Fund Process Image -->
+        <div class="mySlides">
+            <div class="slide-content image-slide">
+                <h2>Chit Fund Process</h2>
+                <div class="image-container">
+                    <!-- Replace with your actual image path -->
+                    <img src="C:\Users\Mathivathini\Downloads\586.png">
+                </div>
+                <p class="image-title">How Our Chit Fund System Works</p>
+            </div>
+            <div class="progress-bar"></div>
+        </div>
+
+        <!-- Slide 9: Thank You -->
+        <div class="mySlides">
+            <div class="slide-content">
+                <div class="thankyou">Thank You</div>
+                <p>Contact us for more information about our chit schemes</p>
+                <p>Phone: +91 8825674089</p>
+                <p>Email: info@jothianandhamchits.com</p>
+            </div>
+            <div class="progress-bar"></div>
+        </div>
+
+        <!-- Navigation dots -->
+        <div class="navigation">
+            <span class="dot" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
+            <span class="dot" onclick="currentSlide(3)"></span>
+            <span class="dot" onclick="currentSlide(4)"></span>
+            <span class="dot" onclick="currentSlide(5)"></span>
+            <span class="dot" onclick="currentSlide(6)"></span>
+            <span class="dot" onclick="currentSlide(7)"></span>
+            <span class="dot" onclick="currentSlide(8)"></span>
+            <span class="dot" onclick="currentSlide(9)"></span>
+        </div>
+    </div>
+
+    <script>
+        let slideIndex = 0;
+        let timer;
+        const slideInterval = 5000; // 5 seconds
+        let isPaused = false;
+        
+        function showSlides() {
+            if (isPaused) return;
+            
+            let i;
+            let slides = document.getElementsByClassName("mySlides");
+            let dots = document.getElementsByClassName("dot");
+            
+            for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";
+            }
+            
+            slideIndex++;
+            
+            if (slideIndex > slides.length) {
+                slideIndex = 1;
+            }
+            
+            for (i = 0; i < dots.length; i++) {
+                dots[i].className = dots[i].className.replace(" active", "");
+            }
+            
+            slides[slideIndex - 1].style.display = "block";
+            dots[slideIndex - 1].className += " active";
+            
+            // Reset the progress bar animation
+            let progressBars = document.getElementsByClassName("progress-bar");
+            for (i = 0; i < progressBars.length; i++) {
+                progressBars[i].style.animation = 'none';
+                progressBars[i].offsetHeight; /* trigger reflow */
+                progressBars[i].style.animation = null;
+            }
+            
+            // Set timer for next slide
+            clearTimeout(timer);
+            timer = setTimeout(showSlides, slideInterval);
+        }
+        
+        function currentSlide(n) {
+            clearTimeout(timer);
+            slideIndex = n - 1;
+            showSlides();
+        }
+        
+        function nextSlide() {
+            clearTimeout(timer);
+            slideIndex++;
+            let slides = document.getElementsByClassName("mySlides");
+            if (slideIndex > slides.length) { slideIndex = 1; }
+            showSlides();
+        }
+        
+        function prevSlide() {
+            clearTimeout(timer);
+            slideIndex--;
+            let slides = document.getElementsByClassName("mySlides");
+            if (slideIndex < 1) { slideIndex = slides.length; }
+            showSlides();
+        }
+        
+        function pauseSlides() {
+            isPaused = true;
+            clearTimeout(timer);
+            
+            // Pause progress bar animations
+            let progressBars = document.getElementsByClassName("progress-bar");
+            for (let i = 0; i < progressBars.length; i++) {
+                progressBars[i].style.animationPlayState = 'paused';
+            }
+        }
+        
+        function resumeSlides() {
+            if (isPaused) {
+                isPaused = false;
+                
+                // Resume progress bar animations
+                let progressBars = document.getElementsByClassName("progress-bar");
+                for (let i = 0; i < progressBars.length; i++) {
+                    progressBars[i].style.animationPlayState = 'running';
+                }
+                
+                // Continue slideshow
+                showSlides();
+            }
+        }
+        
+        // Start the slideshow
+        showSlides();
+    </script>
+</body>
+</html>
