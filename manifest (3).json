@@ -1,0 +1,29 @@
+{
+  "id": "/index.html",
+  "name": "Jothi Anantham Chits",
+  "short_name": "JothiChits",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#2c3e50",
+  "description": "Jothi Anantham Chits — Business &amp;amp; Collection App",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "lang": "en",
+  "dir": "auto",
+  "categories": [
+    "business"
+  ]
+}
