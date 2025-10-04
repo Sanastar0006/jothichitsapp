@@ -1,20 +1,75 @@
 <!doctype html>
 <html lang="ta">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Field Investigation Portal</title>
 <style>
-body{font-family:Arial,sans-serif;background:#f0f4f8;margin:0;padding:0;}
-.container{max-width:1000px;margin:50px auto;background:#fff;padding:25px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.2);}
-h1{text-align:center;color:#f59e0b;text-shadow:0 0 8px #fbbf24;}
-input,select,button{padding:10px 12px;margin:5px 0;border-radius:8px;border:1px solid #94a3b8;font-size:14px;}
-button{cursor:pointer;border:none;font-weight:700;}
-button.submit{background:#22c55e;color:white;}
-button.submit:hover{background:#16a34a;}
-table{width:100%;border-collapse:collapse;margin-top:20px;}
-th,td{padding:10px;border:1px solid #ddd;text-align:center;}
-.msg{margin-top:10px;font-weight:600;text-align:center;color:#10b981;}
+body {
+    font-family: 'Arial', sans-serif;
+    margin:0; padding:0;
+    background: linear-gradient(120deg, #e0f7fa, #e1bee7);
+}
+.container {
+    max-width: 1100px;
+    margin: 50px auto;
+    background: rgba(255,255,255,0.95);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+}
+h1 {
+    text-align: center;
+    color: #ff5722;
+    text-shadow: 1px 1px 5px #fbc02d;
+}
+input, select, button {
+    padding: 10px 15px;
+    margin: 5px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+button {
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+button.submit {
+    background: linear-gradient(90deg,#22c55e,#16a34a);
+    color:white;
+}
+button.submit:hover {
+    background: linear-gradient(90deg,#16a34a,#15803d);
+    transform: scale(1.05);
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 25px;
+}
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+th {
+    background: linear-gradient(90deg,#f59e0b,#fbbf24);
+    color:white;
+}
+tr:hover {
+    background-color: rgba(255,235,59,0.2);
+}
+.msg {
+    margin-top: 15px;
+    font-weight: 600;
+    text-align:center;
+    color: #10b981;
+}
+.scrollable {
+    max-height: 450px;
+    overflow-y: auto;
+}
 </style>
 </head>
 <body>
@@ -29,6 +84,7 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 
 <div class="container" id="fiDiv" style="display:none">
 <h1>Field Investigation Portal</h1>
+<div class="scrollable">
 <table id="fiTable">
 <thead>
 <tr>
@@ -44,6 +100,7 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 </thead>
 <tbody></tbody>
 </table>
+</div>
 <p id="msg" class="msg"></p>
 </div>
 
@@ -57,7 +114,7 @@ function login(){
     document.getElementById('loginDiv').style.display='none';
     document.getElementById('fiDiv').style.display='block';
     loadApplications();
-  }else{
+  } else {
     document.getElementById('loginMsg').textContent="Invalid User ID / Password";
   }
 }
@@ -86,7 +143,7 @@ async function loadApplications(){
                       <td><button class="submit" onclick="submitFI('${app.applicationNumber}')">Submit</button></td>`;
       tbody.appendChild(tr);
     });
-  }catch(err){
+  } catch(err){
     console.log(err);
     document.getElementById('msg').textContent="Error loading applications";
   }
@@ -106,7 +163,7 @@ async function submitFI(appNo){
     } else {
       document.getElementById('msg').textContent=`Error updating ${appNo}`;
     }
-  }catch(err){
+  } catch(err){
     document.getElementById('msg').textContent=`Network error`;
   }
 }
