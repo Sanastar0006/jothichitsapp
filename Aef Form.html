@@ -19,17 +19,14 @@ h1{text-align:center;font-weight:900;margin-bottom:20px;color:#f59e0b;text-shado
 label{display:block;font-size:14px;margin-bottom:6px;font-weight:600;color:#1e293b}
 input[type=text], input[type=date], select, textarea {
   width:50%;
-  padding: 6px 8px;   /* 🔽 box height small */
+  padding: 6px 8px;
   border: 2px solid #94a3b8;
-  border-radius: 6px; /* 🔽 little smaller radius */
-  font-size: 13px;    /* 🔽 font size small */
+  border-radius: 6px;
+  font-size: 13px;
   transition: 0.3s;
   border-color:#38bdf8;
 }
-textarea {
-  min-height: 60px;   /* 🔽 textarea height reduced */
-  resize: vertical;
-}
+textarea { min-height: 60px; resize: vertical; }
 .buttons{display:flex;gap:10px;margin-top:14px;justify-content:center}
 button{padding:10px 16px;border-radius:10px;border:none;font-weight:700;cursor:pointer;transition:0.3s;}
 button.save{background:linear-gradient(90deg,#22c55e,#16a34a);color:white;}
@@ -67,10 +64,10 @@ button.clear:hover{background:linear-gradient(90deg,#b91c1c,#991b1b);}
   <div class="col"><label for="dob">Date of Birth</label><input id="dob" name="dob" type="date" /></div>
   <div class="col"><label for="workDetails">Work Details</label><input id="workDetails" name="workDetails" type="text" /></div>
   <div class="col"><label for="salary">Salary</label><input id="salary" name="salary" type="text" /></div>
- </div>
+</div>
 <div style="margin-bottom:12px"><label for="address">Address</label><textarea id="address" name="address"></textarea></div>
 <div class="row">
- <div class="col"><label for="chit">Chit Value</label><input id="Chit" name=" value" type="text" /></div> 
+  <div class="col"><label for="chit">Chit Value</label><input id="Chit" name="value" type="text" /></div> 
 </div>
 
 <!-- New Fields -->
@@ -80,9 +77,23 @@ button.clear:hover{background:linear-gradient(90deg,#b91c1c,#991b1b);}
   <div class="col"><label for="spouseWork">Spouse Work</label><input id="spouseWork" name="spouseWork" type="text" /></div>
   <div class="col"><label for="spouseSalary">Spouse Salary</label><input id="spouseSalary" name="spouseSalary" type="text" /></div>
 </div>
-  <div class="row">
-<div class="col"><label for="relationship">Relation ship</label><input id="relationship" name="relationship" type="text" /></div>  
+
+<!-- ✅ Relationship Select Field -->
+<div class="row">
+  <div class="col">
+    <label for="relationship">Relationship</label>
+    <select id="relationship" name="relationship">
+      <option value="">Select Relationship</option>
+      <option value="wife">Wife</option>
+      <option value="elder son">Elder Son</option>
+      <option value="older son">Older Son</option>
+      <option value="father">Father</option>
+      <option value="mother">Mother</option>
+      <option value="guardian">Guardian</option>
+    </select>
+  </div>  
 </div>
+
 <div class="row">
   <div class="col"><label for="religion">Religion</label>
     <select id="religion" name="religion">
@@ -94,7 +105,6 @@ button.clear:hover{background:linear-gradient(90deg,#b91c1c,#991b1b);}
   <div class="col"><label for="weddingDate">Wedding Date</label><input id="weddingDate" name="weddingDate" type="date" /></div>
 </div>
 
-<!-- ✅ New Commitment + Spouse Salary Fields -->
 <div class="row">
   <div class="col"><label for="commitment">Commitment</label><input id="commitment" name="commitment" type="text" /></div>
   <div class="col"><label for="allocateGroup">Allocate a group</label><input id="allocateGroup" name="allocateGroup" type="text" /></div>
@@ -108,7 +118,7 @@ button.clear:hover{background:linear-gradient(90deg,#b91c1c,#991b1b);}
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQiLmwOlWjR5dNnnyBC58CjVoQ6bzRkZm-W6vgcJQ2oP4RHeFp2t-vTEThrculEDOA/exec"; // replace with your deployed URL
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQiLmwOlWjR5dNnnyBC58CjVoQ6bzRkZm-W6vgcJQ2oP4RHeFp2t-vTEThrculEDOA/exec";
 const el=id=>document.getElementById(id);
 const msg=(t,o=true)=>{el('msg').textContent=t;el('msg').style.color=o?'green':'red';};
 
@@ -123,7 +133,7 @@ async function fetchNextAppNumber(){
 }
 
 function clearForm(){
-  ['date','customerName','aadhar','pan','phone','dob','spouse','address','allocateGroup','workDetails','salary','spouseWork','spouseDob','religion','weddingDate','commitment','spouseSalary'].forEach(id=>el(id).value='');
+  ['date','customerName','aadhar','pan','phone','dob','spouse','address','allocateGroup','workDetails','salary','spouseWork','spouseDob','religion','weddingDate','commitment','spouseSalary','relationship'].forEach(id=>el(id).value='');
   el('religion').value='Hindu';
   msg('Form cleared',true);
 }
@@ -150,8 +160,9 @@ async function saveData(){
   formData.append("weddingDate",el('weddingDate').value);
   formData.append("commitment",el('commitment').value);
   formData.append("spouseSalary",el('spouseSalary').value);
+  formData.append("relationship",el('relationship').value);
 
-  el('saveBtn').disabled=true;el('saveBtn').textContent='Saving...';
+  el('saveBtn').disabled=true; el('saveBtn').textContent='Saving...';
 
   try{
     const res=await fetch(SCRIPT_URL,{method:'POST',body:formData});
@@ -159,7 +170,7 @@ async function saveData(){
     if(res.ok && data.result==="success"){msg('Saved to Google Sheet');fetchNextAppNumber();clearForm();}
     else{msg('Error saving data',false);}
   }catch(err){msg('Network error: '+err.message,false);}
-  finally{el('saveBtn').disabled=false;el('saveBtn').textContent='Save';}
+  finally{el('saveBtn').disabled=false; el('saveBtn').textContent='Save';}
 }
 
 el('saveBtn').addEventListener('click',saveData);
@@ -168,11 +179,3 @@ fetchNextAppNumber();
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
