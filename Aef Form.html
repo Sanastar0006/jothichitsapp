@@ -17,9 +17,19 @@ h1{text-align:center;font-weight:900;margin-bottom:20px;color:#f59e0b;text-shado
 .row{display:flex;gap:12px;margin-bottom:12px}
 .col{flex:1;}
 label{display:block;font-size:14px;margin-bottom:6px;font-weight:600;color:#1e293b}
-input[type=text], input[type=date], select, textarea{width:100%;padding:10px 12px;border:1px solid #94a3b8;border-radius:8px;font-size:14px;transition:0.3s;border-color:#38bdf8;}
-input:focus, select:focus, textarea:focus{border-color:#facc15;outline:none;}
-textarea{min-height:80px;resize:vertical}
+input[type=text], input[type=date], select, textarea {
+  width: 100%;
+  padding: 6px 8px;   /* 🔽 box height small */
+  border: 1px solid #94a3b8;
+  border-radius: 6px; /* 🔽 little smaller radius */
+  font-size: 13px;    /* 🔽 font size small */
+  transition: 0.3s;
+  border-color:#38bdf8;
+}
+textarea {
+  min-height: 60px;   /* 🔽 textarea height reduced */
+  resize: vertical;
+}
 .buttons{display:flex;gap:10px;margin-top:14px;justify-content:center}
 button{padding:10px 16px;border-radius:10px;border:none;font-weight:700;cursor:pointer;transition:0.3s;}
 button.save{background:linear-gradient(90deg,#22c55e,#16a34a);color:white;}
@@ -156,4 +166,5 @@ fetchNextAppNumber();
 </script>
 </body>
 </html>
+
 
