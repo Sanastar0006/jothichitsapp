@@ -18,7 +18,7 @@ h1{text-align:center;font-weight:900;margin-bottom:20px;color:#f59e0b;text-shado
 .col{flex:1;}
 label{display:block;font-size:14px;margin-bottom:6px;font-weight:600;color:#1e293b}
 input[type=text], input[type=date], select, textarea {
-  width:80%;
+  width:50%;
   padding: 6px 8px;   /* 🔽 box height small */
   border: 2px solid #94a3b8;
   border-radius: 6px; /* 🔽 little smaller radius */
@@ -65,23 +65,23 @@ button.clear:hover{background:linear-gradient(90deg,#b91c1c,#991b1b);}
 </div>
 <div class="row">
   <div class="col"><label for="dob">Date of Birth</label><input id="dob" name="dob" type="date" /></div>
-  
-</div>
+  <div class="col"><label for="workDetails">Work Details</label><input id="workDetails" name="workDetails" type="text" /></div>
+  <div class="col"><label for="salary">Salary</label><input id="salary" name="salary" type="text" /></div>
+ </div>
 <div style="margin-bottom:12px"><label for="address">Address</label><textarea id="address" name="address"></textarea></div>
 <div class="row">
- <div class="col"><label for="spouse">Chit Value</label><input id="Chit" name=" value" type="text" /></div> 
+ <div class="col"><label for="chit">Chit Value</label><input id="Chit" name=" value" type="text" /></div> 
 </div>
 
 <!-- New Fields -->
-<div class="row">
-  <div class="col"><label for="workDetails">Work Details</label><input id="workDetails" name="workDetails" type="text" /></div>
-  <div class="col"><label for="salary">Salary</label><input id="salary" name="salary" type="text" /></div>
-</div>
 <div class="row">
   <div class="col"><label for="spouse">Spouse Name</label><input id="spouse" name="spouse" type="text" /></div> 
   <div class="col"><label for="spouseDob">Spouse DOB</label><input id="spouseDob" name="spouseDob" type="date" /></div>
   <div class="col"><label for="spouseWork">Spouse Work</label><input id="spouseWork" name="spouseWork" type="text" /></div>
   <div class="col"><label for="spouseSalary">Spouse Salary</label><input id="spouseSalary" name="spouseSalary" type="text" /></div>
+</div>
+  <div class="row">
+<div class="col"><label for="relationship">Relation ship</label><input id="relationship" name="relationship" type="text" /></div>  
 </div>
 <div class="row">
   <div class="col"><label for="religion">Religion</label>
@@ -168,6 +168,7 @@ fetchNextAppNumber();
 </script>
 </body>
 </html>
+
 
 
 
