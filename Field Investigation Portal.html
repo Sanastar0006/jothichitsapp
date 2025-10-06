@@ -145,7 +145,7 @@ async function loadApplications(){
     });
   } catch(err){
     console.log(err);
-    document.getElementById('msg').textContent="Error loading applications";
+    document.getElementById('msg').textContent="Error loading applications. Spreadsheet name should be 'AEF' and columns should exactly match.";
   }
 }
 
