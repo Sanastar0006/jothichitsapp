@@ -17,7 +17,7 @@ h1{ text-align:center; font-weight:900; margin-bottom:20px; color:#f59e0b; text-
 .row{display:flex;gap:12px;margin-bottom:12px}
 .col{flex:1;}
 label{display:block;font-size:14px;margin-bottom:6px;font-weight:600;color:#1e293b}
-input[type=text], input[type=date], input[type=number], select, textarea{width:100%;padding:10px 12px;border:1px solid #94a3b8;border-radius:8px;font-size:14px;transition:0.3s;border-color:#38bdf8;}
+input[type=text], input[type=date], select, textarea{width:100%;padding:10px 12px;border:1px solid #94a3b8;border-radius:8px;font-size:14px;transition:0.3s;border-color:#38bdf8;}
 input:focus, select:focus, textarea:focus{border-color:#facc15;outline:none;}
 textarea{min-height:80px;resize:vertical}
 .buttons{display:flex;gap:10px;margin-top:14px;justify-content:center}
@@ -71,12 +71,6 @@ button.clear:hover{background:linear-gradient(90deg,#b91c1c,#991b1b);}
 <div class="col"><label for="spouseWork">Spouse Work</label><input id="spouseWork" name="spouseWork" type="text" /></div>
 <div class="col"><label for="spouseDob">Spouse DOB</label><input id="spouseDob" name="spouseDob" type="date" /></div>
 </div>
-
-<!-- 🔥 Added Field -->
-<div class="row">
-<div class="col"><label for="spouseSalary">Spouse Salary</label><input id="spouseSalary" name="spouseSalary" type="number" placeholder="Enter Spouse Salary" /></div>
-</div>
-
 <div class="row">
 <div class="col"><label for="religion">Religion</label>
 <select id="religion" name="religion">
@@ -85,6 +79,11 @@ button.clear:hover{background:linear-gradient(90deg,#b91c1c,#991b1b);}
 <option value="Muslim">Muslim</option>
 </select></div>
 <div class="col"><label for="weddingDate">Wedding Date</label><input id="weddingDate" name="weddingDate" type="date" /></div>
+</div>
+
+<!-- ✅ New Commitment Field -->
+<div class="row">
+<div class="col"><label for="commitment">Commitment</label><input id="commitment" name="commitment" type="text" /></div>
 </div>
 
 <div class="buttons">
@@ -107,8 +106,8 @@ function clearForm(){
 el('date').value='';el('customerName').value='';el('aadhar').value='';el('pan').value='';el('phone').value='';
 el('dob').value='';el('spouse').value='';el('address').value='';el('allocateGroup').value='';
 el('workDetails').value='';el('salary').value='';el('spouseWork').value='';el('spouseDob').value='';
-el('spouseSalary').value='';
-el('religion').value='Hindu';el('weddingDate').value='';msg('Form cleared',true);}
+el('religion').value='Hindu';el('weddingDate').value='';el('commitment').value='';
+msg('Form cleared',true);}
 
 async function saveData(){
 const formData=new FormData();
@@ -128,9 +127,9 @@ formData.append("workDetails",el('workDetails').value);
 formData.append("salary",el('salary').value);
 formData.append("spouseWork",el('spouseWork').value);
 formData.append("spouseDob",el('spouseDob').value);
-formData.append("spouseSalary",el('spouseSalary').value); // ✅ Added
 formData.append("religion",el('religion').value);
 formData.append("weddingDate",el('weddingDate').value);
+formData.append("commitment",el('commitment').value); // ✅ Added Commitment
 
 el('saveBtn').disabled=true;el('saveBtn').textContent='Saving...';
 
