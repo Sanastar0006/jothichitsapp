@@ -13,7 +13,7 @@ body{font-family: Arial, Helvetica, sans-serif;margin:0;padding:0;overflow-x:hid
 .slide:nth-child(3){background-image:url('https://picsum.photos/id/1020/1920/1080');animation-delay:10s;}
 @keyframes fade{0%{opacity:0}10%{opacity:1}33%{opacity:1}43%{opacity:0}100%{opacity:0}}
 .container{position:relative;max-width:800px;margin:50px auto;background:rgba(255,255,255,0.95);padding:25px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
-h1{ text-align:center; font-weight:900; margin-bottom:20px; color:#f59e0b; text-shadow:0 0 10px #fbbf24;}
+h1{text-align:center;font-weight:900;margin-bottom:20px;color:#f59e0b;text-shadow:0 0 10px #fbbf24;}
 .row{display:flex;gap:12px;margin-bottom:12px}
 .col{flex:1;}
 label{display:block;font-size:14px;margin-bottom:6px;font-weight:600;color:#1e293b}
@@ -42,104 +42,112 @@ button.clear:hover{background:linear-gradient(90deg,#b91c1c,#991b1b);}
 
 <!-- Old Fields -->
 <div class="row">
-<div class="col"><label for="date">Date</label><input id="date" name="date" type="date" /></div>
-<div class="col"><label for="appNo">Application Number</label><input id="appNo" name="applicationNumber" type="text" readonly /></div>
+  <div class="col"><label for="date">Date</label><input id="date" name="date" type="date" /></div>
+  <div class="col"><label for="appNo">Application Number</label><input id="appNo" name="applicationNumber" type="text" readonly /></div>
 </div>
 <div class="row">
-<div class="col"><label for="customerName">Customer Name</label><input id="customerName" name="customerName" type="text" /></div>
-<div class="col"><label for="aadhar">Aadhar No</label><input id="aadhar" name="aadhar" type="text" /></div>
+  <div class="col"><label for="customerName">Customer Name</label><input id="customerName" name="customerName" type="text" /></div>
+  <div class="col"><label for="aadhar">Aadhar No</label><input id="aadhar" name="aadhar" type="text" /></div>
 </div>
 <div class="row">
-<div class="col"><label for="pan">PAN No</label><input id="pan" name="pan" type="text" /></div>
-<div class="col"><label for="phone">Phone Number</label><input id="phone" name="phone" type="text" /></div>
+  <div class="col"><label for="pan">PAN No</label><input id="pan" name="pan" type="text" /></div>
+  <div class="col"><label for="phone">Phone Number</label><input id="phone" name="phone" type="text" /></div>
 </div>
 <div class="row">
-<div class="col"><label for="dob">Date of Birth</label><input id="dob" name="dob" type="date" /></div>
-<div class="col"><label for="spouse">Spouse Name</label><input id="spouse" name="spouse" type="text" /></div>
+  <div class="col"><label for="dob">Date of Birth</label><input id="dob" name="dob" type="date" /></div>
+  <div class="col"><label for="spouse">Spouse Name</label><input id="spouse" name="spouse" type="text" /></div>
 </div>
 <div style="margin-bottom:12px"><label for="address">Address</label><textarea id="address" name="address"></textarea></div>
 <div class="row">
-<div class="col"><label for="allocateGroup">Allocate a group</label><input id="allocateGroup" name="allocateGroup" type="text" /></div>
+  <div class="col"><label for="allocateGroup">Allocate a group</label><input id="allocateGroup" name="allocateGroup" type="text" /></div>
 </div>
 
 <!-- New Fields -->
 <div class="row">
-<div class="col"><label for="workDetails">Work Details</label><input id="workDetails" name="workDetails" type="text" /></div>
-<div class="col"><label for="salary">Salary</label><input id="salary" name="salary" type="text" /></div>
+  <div class="col"><label for="workDetails">Work Details</label><input id="workDetails" name="workDetails" type="text" /></div>
+  <div class="col"><label for="salary">Salary</label><input id="salary" name="salary" type="text" /></div>
 </div>
 <div class="row">
-<div class="col"><label for="spouseWork">Spouse Work</label><input id="spouseWork" name="spouseWork" type="text" /></div>
-<div class="col"><label for="spouseDob">Spouse DOB</label><input id="spouseDob" name="spouseDob" type="date" /></div>
+  <div class="col"><label for="spouseWork">Spouse Work</label><input id="spouseWork" name="spouseWork" type="text" /></div>
+  <div class="col"><label for="spouseDob">Spouse DOB</label><input id="spouseDob" name="spouseDob" type="date" /></div>
 </div>
 <div class="row">
-<div class="col"><label for="religion">Religion</label>
-<select id="religion" name="religion">
-<option value="Hindu">Hindu</option>
-<option value="Christian">Christian</option>
-<option value="Muslim">Muslim</option>
-</select></div>
-<div class="col"><label for="weddingDate">Wedding Date</label><input id="weddingDate" name="weddingDate" type="date" /></div>
+  <div class="col"><label for="religion">Religion</label>
+    <select id="religion" name="religion">
+      <option value="Hindu">Hindu</option>
+      <option value="Christian">Christian</option>
+      <option value="Muslim">Muslim</option>
+    </select>
+  </div>
+  <div class="col"><label for="weddingDate">Wedding Date</label><input id="weddingDate" name="weddingDate" type="date" /></div>
 </div>
 
-<!-- ✅ New Commitment Field -->
+<!-- ✅ New Commitment + Spouse Salary Fields -->
 <div class="row">
-<div class="col"><label for="commitment">Commitment</label><input id="commitment" name="commitment" type="text" /></div>
+  <div class="col"><label for="commitment">Commitment</label><input id="commitment" name="commitment" type="text" /></div>
+  <div class="col"><label for="spouseSalary">Spouse Salary</label><input id="spouseSalary" name="spouseSalary" type="text" /></div>
 </div>
 
 <div class="buttons">
-<button class="save" id="saveBtn">Save</button>
-<button class="clear" id="clearBtn" type="button">Clear</button>
+  <button class="save" id="saveBtn">Save</button>
+  <button class="clear" id="clearBtn" type="button">Clear</button>
 </div>
 <div class="msg" id="msg"></div>
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzvh57IxZdjmcdXvy0oxxIGaSH51hT-u6ZgiHn0Pu4LbMV_VNanT7lgzHyNHM0vNZ8c/exec"; // <-- replace with your deployed Apps Script URL
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzvh57IxZdjmcdXvy0oxxIGaSH51hT-u6ZgiHn0Pu4LbMV_VNanT7lgzHyNHM0vNZ8c/exec"; // replace with your deployed URL
 const el=id=>document.getElementById(id);
 const msg=(t,o=true)=>{el('msg').textContent=t;el('msg').style.color=o?'green':'red';};
 
 async function fetchNextAppNumber(){
-try{const res=await fetch(SCRIPT_URL+"?action=getNextAppNo");const data=await res.json();el('appNo').value=data.nextAppNo;}
-catch(e){el('appNo').value=335;}}
+  try{
+    const res=await fetch(SCRIPT_URL+"?action=getNextAppNo");
+    const data=await res.json();
+    el('appNo').value=data.nextAppNo;
+  }catch(e){
+    el('appNo').value=334;
+  }
+}
 
 function clearForm(){
-el('date').value='';el('customerName').value='';el('aadhar').value='';el('pan').value='';el('phone').value='';
-el('dob').value='';el('spouse').value='';el('address').value='';el('allocateGroup').value='';
-el('workDetails').value='';el('salary').value='';el('spouseWork').value='';el('spouseDob').value='';
-el('religion').value='Hindu';el('weddingDate').value='';el('commitment').value='';
-msg('Form cleared',true);}
+  ['date','customerName','aadhar','pan','phone','dob','spouse','address','allocateGroup','workDetails','salary','spouseWork','spouseDob','religion','weddingDate','commitment','spouseSalary'].forEach(id=>el(id).value='');
+  el('religion').value='Hindu';
+  msg('Form cleared',true);
+}
 
 async function saveData(){
-const formData=new FormData();
-formData.append("date",el('date').value);
-formData.append("applicationNumber",el('appNo').value);
-formData.append("customerName",el('customerName').value);
-formData.append("aadhar",el('aadhar').value);
-formData.append("pan",el('pan').value);
-formData.append("phone",el('phone').value);
-formData.append("dob",el('dob').value);
-formData.append("spouse",el('spouse').value);
-formData.append("address",el('address').value);
-formData.append("fieldInvestigation","Pending"); // default
-formData.append("status","");
-formData.append("allocateGroup",el('allocateGroup').value);
-formData.append("workDetails",el('workDetails').value);
-formData.append("salary",el('salary').value);
-formData.append("spouseWork",el('spouseWork').value);
-formData.append("spouseDob",el('spouseDob').value);
-formData.append("religion",el('religion').value);
-formData.append("weddingDate",el('weddingDate').value);
-formData.append("commitment",el('commitment').value); // ✅ Added Commitment
+  const formData=new FormData();
+  formData.append("date",el('date').value);
+  formData.append("applicationNumber",el('appNo').value);
+  formData.append("customerName",el('customerName').value);
+  formData.append("aadhar",el('aadhar').value);
+  formData.append("pan",el('pan').value);
+  formData.append("phone",el('phone').value);
+  formData.append("dob",el('dob').value);
+  formData.append("spouse",el('spouse').value);
+  formData.append("address",el('address').value);
+  formData.append("fieldInvestigation","Pending"); 
+  formData.append("status","");
+  formData.append("allocateGroup",el('allocateGroup').value);
+  formData.append("workDetails",el('workDetails').value);
+  formData.append("salary",el('salary').value);
+  formData.append("spouseWork",el('spouseWork').value);
+  formData.append("spouseDob",el('spouseDob').value);
+  formData.append("religion",el('religion').value);
+  formData.append("weddingDate",el('weddingDate').value);
+  formData.append("commitment",el('commitment').value);
+  formData.append("spouseSalary",el('spouseSalary').value);
 
-el('saveBtn').disabled=true;el('saveBtn').textContent='Saving...';
+  el('saveBtn').disabled=true;el('saveBtn').textContent='Saving...';
 
-try{
-const res=await fetch(SCRIPT_URL,{method:'POST',body:formData});
-const data=await res.json();
-if(res.ok && data.result==="success"){msg('Saved to Google Sheet');fetchNextAppNumber();clearForm();}
-else{msg('Error saving data',false);}
-}catch(err){msg('Network error: '+err.message,false);}
-finally{el('saveBtn').disabled=false;el('saveBtn').textContent='Save';}
+  try{
+    const res=await fetch(SCRIPT_URL,{method:'POST',body:formData});
+    const data=await res.json();
+    if(res.ok && data.result==="success"){msg('Saved to Google Sheet');fetchNextAppNumber();clearForm();}
+    else{msg('Error saving data',false);}
+  }catch(err){msg('Network error: '+err.message,false);}
+  finally{el('saveBtn').disabled=false;el('saveBtn').textContent='Save';}
 }
 
 el('saveBtn').addEventListener('click',saveData);
