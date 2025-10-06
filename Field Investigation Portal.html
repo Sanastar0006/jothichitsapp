@@ -11,7 +11,7 @@ body {
     background: linear-gradient(120deg, #e0f7fa, #e1bee7);
 }
 .container {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 50px auto;
     background: rgba(255,255,255,0.95);
     padding: 30px;
@@ -47,9 +47,10 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 25px;
+    font-size: 14px;
 }
 th, td {
-    padding: 12px;
+    padding: 10px;
     border: 1px solid #ddd;
     text-align: center;
 }
@@ -67,7 +68,7 @@ tr:hover {
     color: #10b981;
 }
 .scrollable {
-    max-height: 450px;
+    max-height: 500px;
     overflow-y: auto;
 }
 </style>
@@ -75,37 +76,41 @@ tr:hover {
 <body>
 
 <div class="container" id="loginDiv">
-<h1>Field Investigation Login</h1>
-<label>User ID</label><input type="text" id="userId" placeholder="Enter User ID" /><br/>
-<label>Password</label><input type="password" id="password" placeholder="Enter Password" /><br/>
-<button onclick="login()">Login</button>
-<p id="loginMsg" style="color:red;"></p>
+  <h1>Field Investigation Login</h1>
+  <label>User ID</label><input type="text" id="userId" placeholder="Enter User ID" /><br/>
+  <label>Password</label><input type="password" id="password" placeholder="Enter Password" /><br/>
+  <button onclick="login()">Login</button>
+  <p id="loginMsg" style="color:red;"></p>
 </div>
 
 <div class="container" id="fiDiv" style="display:none">
-<h1>Field Investigation Portal</h1>
-<div class="scrollable">
-<table id="fiTable">
-<thead>
-<tr>
-<th>Application Number</th>
-<th>Customer Name</th>
-<th>Aadhar No</th>
-<th>PAN No</th>
-<th>Phone</th>
-<th>Address</th>
-<th>Field Investigation</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
-</div>
-<p id="msg" class="msg"></p>
+  <h1>Field Investigation Portal</h1>
+  <div class="scrollable">
+    <table id="fiTable">
+      <thead>
+        <tr>
+          <th>App No</th>
+          <th>Customer Name</th>
+          <th>Aadhar</th>
+          <th>PAN</th>
+          <th>Phone</th>
+          <th>Address</th>
+          <th>Salary</th>
+          <th>Spouse Work</th>
+          <th>Spouse Salary</th>
+          <th>Commitment</th>
+          <th>FI Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <p id="msg" class="msg"></p>
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzvh57IxZdjmcdXvy0oxxIGaSH51hT-u6ZgiHn0Pu4LbMV_VNanT7lgzHyNHM0vNZ8c/exec"; // replace with your Web App URL
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQiLmwOlWjR5dNnnyBC58CjVoQ6bzRkZm-W6vgcJQ2oP4RHeFp2t-vTEThrculEDOA/exec"; // replace with your Web App URL
 
 function login(){
   const user = document.getElementById('userId').value.trim();
@@ -127,20 +132,25 @@ async function loadApplications(){
     tbody.innerHTML="";
     data.forEach(app=>{
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${app.applicationNumber}</td>
-                      <td>${app.customerName}</td>
-                      <td>${app.aadhar || ""}</td>
-                      <td>${app.pan || ""}</td>
-                      <td>${app.phone || ""}</td>
-                      <td>${app.address || ""}</td>
-                      <td>
-                        <select id="fiStatus_${app.applicationNumber}">
-                          <option value="Approve">Approve</option>
-                          <option value="Reject">Reject</option>
-                          <option value="Waiting / Counseling">Waiting / Counseling</option>
-                        </select>
-                      </td>
-                      <td><button class="submit" onclick="submitFI('${app.applicationNumber}')">Submit</button></td>`;
+      tr.innerHTML = `
+        <td>${app.applicationNumber}</td>
+        <td>${app.customerName}</td>
+        <td>${app.aadhar || ""}</td>
+        <td>${app.pan || ""}</td>
+        <td>${app.phone || ""}</td>
+        <td>${app.address || ""}</td>
+        <td>${app.salary || ""}</td>
+        <td>${app.spouseWork || ""}</td>
+        <td>${app.spouseSalary || ""}</td>
+        <td>${app.commitment || ""}</td>
+        <td>
+          <select id="fiStatus_${app.applicationNumber}">
+            <option value="Approve" ${app.fieldInvestigation==="Approve"?"selected":""}>Approve</option>
+            <option value="Reject" ${app.fieldInvestigation==="Reject"?"selected":""}>Reject</option>
+            <option value="Waiting / Counseling" ${app.fieldInvestigation==="Waiting / Counseling"?"selected":""}>Waiting / Counseling</option>
+          </select>
+        </td>
+        <td><button class="submit" onclick="submitFI('${app.applicationNumber}')">Submit</button></td>`;
       tbody.appendChild(tr);
     });
   } catch(err){
@@ -171,5 +181,3 @@ async function submitFI(appNo){
 
 </body>
 </html>
-
-
