@@ -1,162 +1,143 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="ta">
 <head>
-  <meta charset="UTF-8">
-  <title>Application Entry Form (AEF)</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(120deg, #89f7fe, #66a6ff);
-      margin: 0;
-      padding: 0;
-    }
-    h2 {
-      text-align: center;
-      font-weight: bold;
-      color: #fff;
-      padding: 20px;
-      background: #333;
-      margin: 0;
-    }
-    form {
-      max-width: 700px;
-      margin: 20px auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 12px;
-      color: #333;
-    }
-    input, select {
-      width: 250px; /* medium size */
-      padding: 8px;
-      margin-top: 4px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-    button {
-      padding: 10px 20px;
-      margin: 15px 10px 0 0;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      background: linear-gradient(90deg, #ff7eb3, #ff758c);
-      color: #fff;
-      transition: 0.3s;
-    }
-    button:hover {
-      opacity: 0.85;
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Application Enter Form (AEF)</title>
+<style>
+body{font-family: Arial, Helvetica, sans-serif;margin:0;padding:0;overflow-x:hidden;}
+.slideshow{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;overflow:hidden;}
+.slide{width:100%;height:100%;position:absolute;background-size:cover;background-position:center;animation:fade 15s infinite;opacity:0;}
+.slide:nth-child(1){background-image:url('https://picsum.photos/id/1015/1920/1080');animation-delay:0s;}
+.slide:nth-child(2){background-image:url('https://picsum.photos/id/1016/1920/1080');animation-delay:5s;}
+.slide:nth-child(3){background-image:url('https://picsum.photos/id/1020/1920/1080');animation-delay:10s;}
+@keyframes fade{0%{opacity:0}10%{opacity:1}33%{opacity:1}43%{opacity:0}100%{opacity:0}}
+.container{position:relative;max-width:800px;margin:50px auto;background:rgba(255,255,255,0.95);padding:25px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
+h1{ text-align:center; font-weight:900; margin-bottom:20px; color:#f59e0b; text-shadow:0 0 10px #fbbf24;}
+.row{display:flex;gap:12px;margin-bottom:12px}
+.col{flex:1;}
+label{display:block;font-size:14px;margin-bottom:6px;font-weight:600;color:#1e293b}
+input[type=text], input[type=date], select, textarea{width:100%;padding:10px 12px;border:1px solid #94a3b8;border-radius:8px;font-size:14px;transition:0.3s;border-color:#38bdf8;}
+input:focus, select:focus, textarea:focus{border-color:#facc15;outline:none;}
+textarea{min-height:80px;resize:vertical}
+.buttons{display:flex;gap:10px;margin-top:14px;justify-content:center}
+button{padding:10px 16px;border-radius:10px;border:none;font-weight:700;cursor:pointer;transition:0.3s;}
+button.save{background:linear-gradient(90deg,#22c55e,#16a34a);color:white;}
+button.save:hover{background:linear-gradient(90deg,#16a34a,#15803d);}
+button.clear{background:linear-gradient(90deg,#ef4444,#b91c1c);color:white;}
+button.clear:hover{background:linear-gradient(90deg,#b91c1c,#991b1b);}
+.msg{margin-top:10px;font-weight:600;text-align:center;color:#10b981;}
+</style>
 </head>
 <body>
 
-  <h2>Application Entry Form (AEF)</h2>
-  <form id="aefForm">
-    <label>Date:</label>
-    <input type="date" name="date" required>
+<div class="slideshow">
+<div class="slide"></div>
+<div class="slide"></div>
+<div class="slide"></div>
+</div>
 
-    <label>Application Number:</label>
-    <input type="text" name="appNumber" id="appNumber" readonly>
+<div class="container">
+<h1>✨ Application Enter Form (AEF) ✨</h1>
 
-    <label>Customer Name:</label>
-    <input type="text" name="customerName" required>
+<!-- Old Fields -->
+<div class="row">
+<div class="col"><label for="date">Date</label><input id="date" name="date" type="date" /></div>
+<div class="col"><label for="appNo">Application Number</label><input id="appNo" name="applicationNumber" type="text" readonly /></div>
+</div>
+<div class="row">
+<div class="col"><label for="customerName">Customer Name</label><input id="customerName" name="customerName" type="text" /></div>
+<div class="col"><label for="aadhar">Aadhar No</label><input id="aadhar" name="aadhar" type="text" /></div>
+</div>
+<div class="row">
+<div class="col"><label for="pan">PAN No</label><input id="pan" name="pan" type="text" /></div>
+<div class="col"><label for="phone">Phone Number</label><input id="phone" name="phone" type="text" /></div>
+</div>
+<div class="row">
+<div class="col"><label for="dob">Date of Birth</label><input id="dob" name="dob" type="date" /></div>
+<div class="col"><label for="spouse">Spouse Name</label><input id="spouse" name="spouse" type="text" /></div>
+</div>
+<div style="margin-bottom:12px"><label for="address">Address</label><textarea id="address" name="address"></textarea></div>
+<div class="row">
+<div class="col"><label for="allocateGroup">Allocate a group</label><input id="allocateGroup" name="allocateGroup" type="text" /></div>
+</div>
 
-    <label>Aadhar No:</label>
-    <input type="text" name="aadhar" required>
+<!-- New Fields -->
+<div class="row">
+<div class="col"><label for="workDetails">Work Details</label><input id="workDetails" name="workDetails" type="text" /></div>
+<div class="col"><label for="salary">Salary</label><input id="salary" name="salary" type="text" /></div>
+</div>
+<div class="row">
+<div class="col"><label for="spouseWork">Spouse Work</label><input id="spouseWork" name="spouseWork" type="text" /></div>
+<div class="col"><label for="spouseDob">Spouse DOB</label><input id="spouseDob" name="spouseDob" type="date" /></div>
+</div>
+<div class="row">
+<div class="col"><label for="religion">Religion</label>
+<select id="religion" name="religion">
+<option value="Hindu">Hindu</option>
+<option value="Christian">Christian</option>
+<option value="Muslim">Muslim</option>
+</select></div>
+<div class="col"><label for="weddingDate">Wedding Date</label><input id="weddingDate" name="weddingDate" type="date" /></div>
+</div>
 
-    <label>PAN No:</label>
-    <input type="text" name="pan" required>
+<div class="buttons">
+<button class="save" id="saveBtn">Save</button>
+<button class="clear" id="clearBtn" type="button">Clear</button>
+</div>
+<div class="msg" id="msg"></div>
+</div>
 
-    <label>Phone Number:</label>
-    <input type="text" name="phone" required>
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzvh57IxZdjmcdXvy0oxxIGaSH51hT-u6ZgiHn0Pu4LbMV_VNanT7lgzHyNHM0vNZ8c/exec"; // <-- replace with your deployed Apps Script URL
+const el=id=>document.getElementById(id);
+const msg=(t,o=true)=>{el('msg').textContent=t;el('msg').style.color=o?'green':'red';};
 
-    <label>Date of Birth:</label>
-    <input type="date" name="dob">
+async function fetchNextAppNumber(){
+try{const res=await fetch(SCRIPT_URL+"?action=getNextAppNo");const data=await res.json();el('appNo').value=data.nextAppNo;}
+catch(e){el('appNo').value=335;}}
 
-    <label>Spouse Name:</label>
-    <input type="text" name="spouseName">
+function clearForm(){
+el('date').value='';el('customerName').value='';el('aadhar').value='';el('pan').value='';el('phone').value='';
+el('dob').value='';el('spouse').value='';el('address').value='';el('allocateGroup').value='';
+el('workDetails').value='';el('salary').value='';el('spouseWork').value='';el('spouseDob').value='';
+el('religion').value='Hindu';el('weddingDate').value='';msg('Form cleared',true);}
 
-    <label>Spouse DOB:</label>
-    <input type="date" name="spouseDob">
+async function saveData(){
+const formData=new FormData();
+formData.append("date",el('date').value);
+formData.append("applicationNumber",el('appNo').value);
+formData.append("customerName",el('customerName').value);
+formData.append("aadhar",el('aadhar').value);
+formData.append("pan",el('pan').value);
+formData.append("phone",el('phone').value);
+formData.append("dob",el('dob').value);
+formData.append("spouse",el('spouse').value);
+formData.append("address",el('address').value);
+formData.append("fieldInvestigation","Pending"); // default
+formData.append("status","");
+formData.append("allocateGroup",el('allocateGroup').value);
+formData.append("workDetails",el('workDetails').value);
+formData.append("salary",el('salary').value);
+formData.append("spouseWork",el('spouseWork').value);
+formData.append("spouseDob",el('spouseDob').value);
+formData.append("religion",el('religion').value);
+formData.append("weddingDate",el('weddingDate').value);
 
-    <label>Spouse Work:</label>
-    <input type="text" name="spouseWork">
+el('saveBtn').disabled=true;el('saveBtn').textContent='Saving...';
 
-    <label>Spouse Salary:</label>
-    <input type="number" name="spouseSalary" placeholder="Enter salary">
+try{
+const res=await fetch(SCRIPT_URL,{method:'POST',body:formData});
+const data=await res.json();
+if(res.ok && data.result==="success"){msg('Saved to Google Sheet');fetchNextAppNumber();clearForm();}
+else{msg('Error saving data',false);}
+}catch(err){msg('Network error: '+err.message,false);}
+finally{el('saveBtn').disabled=false;el('saveBtn').textContent='Save';}
+}
 
-    <label>Work Details:</label>
-    <input type="text" name="workDetails">
-
-    <label>Salary:</label>
-    <input type="number" name="salary">
-
-    <label>Religion:</label>
-    <select name="religion">
-      <option value="Hindu">Hindu</option>
-      <option value="Christian">Christian</option>
-      <option value="Muslim">Muslim</option>
-    </select>
-
-    <label>Wedding Date:</label>
-    <input type="date" name="weddingDate">
-
-    <label>Address:</label>
-    <input type="text" name="address">
-
-    <label>Allocate a group:</label>
-    <input type="text" name="group">
-
-    <div>
-      <button type="button" onclick="saveData()">Save</button>
-      <button type="reset">Clear</button>
-    </div>
-  </form>
-
-  <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzvh57IxZdjmcdXvy0oxxIGaSH51hT-u6ZgiHn0Pu4LbMV_VNanT7lgzHyNHM0vNZ8c/exec"; // 🔴 உங்கள் Apps Script Web App URL இங்கே போடு
-
-    // Application Number auto load (Sheet லிருந்து max + 1)
-    async function loadAppNumber() {
-      try {
-        const res = await fetch(scriptURL + "?action=getMaxAppNumber");
-        const data = await res.json();
-        document.getElementById("appNumber").value = data.nextAppNumber;
-      } catch (e) {
-        console.error("Error fetching app number", e);
-      }
-    }
-
-    loadAppNumber();
-
-    // Save data
-    async function saveData() {
-      const form = document.getElementById("aefForm");
-      const formData = new FormData(form);
-      formData.append("action", "save");
-
-      try {
-        const res = await fetch(scriptURL, { method: "POST", body: formData });
-        const data = await res.json();
-        if (data.result === "success") {
-          alert("Saved to Google Sheet!");
-          loadAppNumber();
-          form.reset();
-        } else {
-          alert("Failed to save data.");
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Error saving data.");
-      }
-    }
-  </script>
+el('saveBtn').addEventListener('click',saveData);
+el('clearBtn').addEventListener('click',clearForm);
+fetchNextAppNumber();
+</script>
 </body>
 </html>
