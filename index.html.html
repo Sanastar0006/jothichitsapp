@@ -488,6 +488,51 @@ window.showReceiptById = function(id){
   showReceipt(t);
 };
 
+function printReceipt() {
+  try {
+    if (navigator.bluetooth) {
+      // Web Bluetooth - user select printer
+      printViaBluetooth();
+    } else {
+      // fallback - normal system print dialog
+      printUsingSystemDialog();
+    }
+  } catch {
+    printUsingSystemDialog();
+  }
+}
+
+async function printViaBluetooth() {
+  const serviceUUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
+  const characteristicUUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
+
+  const device = await navigator.bluetooth.requestDevice({
+    acceptAllDevices: true,
+    optionalServices: [serviceUUID]
+  });
+
+  const server = await device.gatt.connect();
+  const service = await server.getPrimaryService(serviceUUID);
+  const characteristic = await service.getCharacteristic(characteristicUUID);
+
+  const text = "Hello! Printing from your selected printer 😎\n\n\n";
+  const encoder = new TextEncoder();
+  const data = encoder.encode(text);
+  await characteristic.writeValue(data);
+  alert("✅ Printed to " + device.name);
+}
+
+function printUsingSystemDialog() {
+  const printWindow = window.open('', '', 'width=600,height=800');
+  printWindow.document.write('<pre>' + document.getElementById('receiptHtml').innerText + '</pre>');
+  printWindow.document.close();
+  printWindow.print();
+}
+
+
+// Replace the normal window.print with this:
+el('printReceiptBtn').addEventListener('click', printToBluetooth);
+
 /* Receipt UI */
 function showReceipt(txn){
   const html = `
@@ -716,4 +761,3 @@ function populateAccountsForOptions(){
 </script>
 </body>
 </html>
-
