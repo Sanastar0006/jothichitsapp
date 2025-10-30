@@ -488,35 +488,6 @@ window.showReceiptById = function(id){
   showReceipt(t);
 };
 
-async function printToBluetooth() {
-  try {
-    const device = await navigator.bluetooth.requestDevice({
-      acceptAllDevices: true,
-      optionalServices: [serviceUUID]
-    });
-
-    const server = await device.gatt.connect();
-    const service = await server.getPrimaryService(serviceUUID);
-    const characteristic = await service.getCharacteristic(charUUID);
-
-    const text = el('receiptHtml').innerText + "\n\n\n\n";
-    const encoder = new TextEncoder();
-    const data = encoder.encode(text);
-
-    const chunkSize = 150;
-    for (let i = 0; i < data.length; i += chunkSize) {
-      const chunk = data.slice(i, i + chunkSize);
-      await characteristic.writeValue(chunk);
-      await new Promise(r => setTimeout(r, 100));
-    }
-
-    toast("✅ Printed to Bluetooth Printer!");
-  } catch (err) {
-    console.error(err);
-    toast("⚠️ Bluetooth print failed: " + err.message);
-  }
-}
-
 /* Receipt UI */
 function showReceipt(txn){
   const html = `
