@@ -32,11 +32,20 @@ input,select,textarea{width:100%;padding:8px;border:1px solid #e6eef7;border-rad
 .table-scroll{max-height:360px;overflow:auto}
 table{width:100%;border-collapse:collapse}
 th,td{padding:8px;border-bottom:1px solid #f1f5f9;font-size:13px;text-align:left}
-.receipt-small { font-family: monospace; font-size:12px; width:58mm; }
+.receipt-small { font-family: monospace; font-size:12px; width:48mm; }
 .toast{position:fixed;right:16px;bottom:16px;background:#0f4c81;color:white;padding:8px 12px;border-radius:8px;display:none}
 .status-ok{color:green;font-weight:700}
 .status-bad{color:red;font-weight:700}
 @media(max-width:980px){ .grid{grid-template-columns:1fr} }
+
+/* 🔹 Added: print CSS for 48mm thermal when using window.print() */
+@media print {
+  @page { size: 48mm auto; margin: 0; }
+  body * { visibility: hidden; }
+  #print-area, #print-area * { visibility: visible; }
+  #print-area { position: absolute; left: 0; top: 0; }
+}
+.receipt-print { width:48mm; padding:6px; font-family:monospace; font-size:12px; line-height:1.2; color: #000; }
 </style>
 </head>
 <body>
@@ -261,11 +270,18 @@ th,td{padding:8px;border-bottom:1px solid #f1f5f9;font-size:13px;text-align:left
 
 <div class="toast" id="toast"></div>
 
-<!-- Receipt popup (unchanged) -->
+<!-- Receipt popup (modified: print buttons added) -->
 <div id="receiptModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;z-index:9999">
   <div style="background:white;padding:10px;border-radius:8px;width:300px" class="receipt-small">
     <div id="receiptHtml"></div>
-    <div style="text-align:center;margin-top:8px"><button id="printReceiptBtn" class="btn btn-primary">Print</button><button id="closeReceipt" class="btn btn-ghost">Close</button></div>
+
+    <!-- 🔹 Added for RawBT Print: buttons inside receipt modal -->
+    <div style="text-align:center;margin-top:8px;display:flex;gap:8px;justify-content:center;">
+      <button id="mobilePrintBtn" class="btn btn-primary">Print (Android)</button>
+      <button id="rawbtQuickPrintBtn" class="btn btn-ghost">Quick Print (RawBT)</button>
+      <button id="closeReceipt" class="btn btn-ghost">Close</button>
+    </div>
+    <!-- end added -->
   </div>
 </div>
 
@@ -488,13 +504,137 @@ window.showReceiptById = function(id){
   showReceipt(t);
 };
 
-/* Receipt UI */
+/* ====== 🔹 Added for RawBT + Android print support ======
+   Functions: buildReceiptData, openPrintPreview, quickPrintRawBT
+   The receipt modal already exists; we added 2 buttons there earlier.
+   showReceipt() will use buildReceiptData to fill the modal and prepare quick print.
+*/
+
+/* Build printable HTML and plain-text for RawBT */
+function buildReceiptData(txn) {
+  const date = txn.Date || new Date().toISOString().slice(0,10);
+  const id = txn.CustomerID || '';
+  const name = txn.Name || '';
+  const group = txn.Group || '';
+  const amt = txn.Amount || '0';
+  const type = txn.Type || '';
+  const receiptNo = txn.ReceiptNo || txn.TxnID || '';
+  const madeBy = txn.MadeBy || '';
+
+  const html = `
+    <div style="width:48mm;padding:6px;font-family:monospace;font-size:12px;line-height:1.2;">
+      <div style="text-align:center;font-weight:700;font-size:13px">ஜோதி ஆனந்தம் சிட்ஸ்</div>
+      <div style="text-align:center;font-size:10px">AMC Complex, Madurai Road, Manappari</div>
+      <hr style="border:none;border-top:1px dashed #000;margin:6px 0;">
+      <div><strong>Receipt:</strong> ${receiptNo}</div>
+      <div><strong>Date:</strong> ${date}</div>
+      <div><strong>Name:</strong> ${id} ${name ? ('- ' + name) : ''}</div>
+      <div><strong>Group:</strong> ${group}</div>
+      <div style="margin-top:6px"><strong>Type:</strong> ${type}</div>
+      <div style="margin-top:6px;font-size:13px;font-weight:700">AMT: ₹${amt}</div>
+      <div style="margin-top:8px"><strong>Collector:</strong> ${madeBy}</div>
+      <hr style="border:none;border-top:1px dashed #000;margin:6px 0;">
+      <div style="text-align:center;font-size:11px">Thank you! Visit Again</div>
+      <div style="height:10px;"></div>
+    </div>
+  `;
+
+  const textLines = [
+                            "ஜோதி ஆனந்தம் சிட்ஸ்",
+    "🪔Jothi Anadham chits(p)Ltd 🪔    AMC Complex, Madurai Road, Manappari",
+    "--------------------------------",
+    `Receipt: ${receiptNo}`,
+    `Date: ${date}`,
+    `Name: ${id}${name?(' - '+name):''}`,
+    `Group: ${group}`,
+    `Type: ${type}`,
+    `Amount: ₹${amt}`,
+    `Collector: ${madeBy}`,
+    "--------------------------------",
+    "Thank you! Visit Again",
+    ""
+  ];
+  const text = textLines.join("\n");
+
+  return { html, text };
+}
+
+/* open print preview (window.print) - uses #print-area element */
+function openPrintPreview(htmlContent) {
+  let printArea = document.getElementById('print-area');
+  if(!printArea){
+    printArea = document.createElement('div');
+    printArea.id = 'print-area';
+    document.body.appendChild(printArea);
+  }
+  printArea.innerHTML = `<div class="receipt-print">${htmlContent}</div>`;
+  setTimeout(() => { window.print(); }, 250);
+}
+
+/* quick print via RawBT URI */
+function quickPrintRawBT(plainText) {
+  const payload = encodeURIComponent(plainText);
+  const scheme = 'rawbt:' + payload;
+  // Try to open RawBT app
+  window.location.href = scheme;
+}
+
+/* Hook buttons in receipt modal */
+document.getElementById('mobilePrintBtn').addEventListener('click', ()=> {
+  // try to use the last shown receipt content if available
+  const raw = el('receiptHtml').dataset.raw || '';
+  if(raw){
+    openPrintPreview(raw);
+    return;
+  }
+  // fallback: build from form fields
+  const txn = {
+    Date: (document.getElementById('txnDate') && document.getElementById('txnDate').value) || new Date().toISOString().slice(0,10),
+    CustomerID: (document.getElementById('txnCustId') && document.getElementById('txnCustId').value) || '',
+    Name: (document.getElementById('txnCustName') && document.getElementById('txnCustName').value) || '',
+    Group: (document.getElementById('txnCustGroup') && document.getElementById('txnCustGroup').value) || '',
+    Amount: (document.getElementById('txnAmount') && document.getElementById('txnAmount').value) || '0',
+    Type: (document.getElementById('txnType') && document.getElementById('txnType').value) || '',
+    ReceiptNo: '',
+    MadeBy: (document.getElementById('txnMadeBy') && document.getElementById('txnMadeBy').value) || ''
+  };
+  const data = buildReceiptData(txn);
+  openPrintPreview(data.html);
+});
+
+document.getElementById('rawbtQuickPrintBtn').addEventListener('click', ()=> {
+  const plain = el('receiptHtml').dataset.text || '';
+  if(plain){
+    quickPrintRawBT(plain);
+    return;
+  }
+  const txn = {
+    Date: (document.getElementById('txnDate') && document.getElementById('txnDate').value) || new Date().toISOString().slice(0,10),
+    CustomerID: (document.getElementById('txnCustId') && document.getElementById('txnCustId').value) || '',
+    Name: (document.getElementById('txnCustName') && document.getElementById('txnCustName').value) || '',
+    Group: (document.getElementById('txnCustGroup') && document.getElementById('txnCustGroup').value) || '',
+    Amount: (document.getElementById('txnAmount') && document.getElementById('txnAmount').value) || '0',
+    Type: (document.getElementById('txnType') && document.getElementById('txnType').value) || '',
+    ReceiptNo: '',
+    MadeBy: (document.getElementById('txnMadeBy') && document.getElementById('txnMadeBy').value) || ''
+  };
+  const data = buildReceiptData(txn);
+  quickPrintRawBT(data.text);
+});
+
+/* existing close receipt button handler (remains) */
+el('closeReceipt').addEventListener('click', ()=> el('receiptModal').style.display='none');
+
+/* ===== end of RawBT print support ====== */
+
+/* Receipt UI (modified to store raw text/html in DOM for print) */
 function showReceipt(txn){
+  const built = buildReceiptData(txn);
   const html = `
     <div style="text-align:center;font-weight:700">ஜோதி ஆனந்தம் சிட்ஸ் (P) லிமிட்</div>
     <div style="font-size:12px;margin-top:6px">AMC Complex, Madurai Road, Manappari - 621306<br>Phone: 8072048664</div>
     <hr/>
-    <div><strong>Receipt No:</strong> ${getVal(txn,'ReceiptNo')||''}</div>
+    <div><strong>Receipt No:</strong> ${getVal(txn,'ReceiptNo')||getVal(txn,'TxnID')||''}</div>
     <div><strong>Date:</strong> ${getVal(txn,'Date')||''}</div>
     <div><strong>Customer:</strong> ${getVal(txn,'CustomerID')||''} - ${getVal(txn,'Name')||''}</div>
     <div><strong>Group:</strong> ${getVal(txn,'Group')||''}</div>
@@ -503,15 +643,11 @@ function showReceipt(txn){
     <div style="margin-top:8px;text-align:center;font-size:12px">Thanks!</div>
   `;
   el('receiptHtml').innerHTML = html;
+  // store the printable HTML and plain text in data attributes for quick use
+  el('receiptHtml').dataset.raw = built.html;
+  el('receiptHtml').dataset.text = built.text;
   el('receiptModal').style.display='flex';
 }
-el('closeReceipt').addEventListener('click', ()=> el('receiptModal').style.display='none');
-el('printReceiptBtn').addEventListener('click', ()=> {
-  const html = el('receiptHtml').innerHTML;
-  const w = window.open('','_blank','width=300,height=600');
-  w.document.write(`<html><head><title>Receipt</title><style>body{font-family:monospace;font-size:12px;width:58mm}</style></head><body>${html}<script>window.print();window.onafterprint=function(){window.close();}<\/script></body></html>`);
-  w.document.close();
-});
 
 /* Collections */
 function populateCollectionsMadeBy(){
@@ -624,7 +760,7 @@ function calcDenomAcc(){
   const denoms = [500,200,100,50,20,10,5,2,1]; let sum=0;
   denoms.forEach(v=>{
     const n = parseInt(el('a_d'+v).value) || 0; const amt = n * v;
-    el('a_a'+v).textContent = amt.toFixed(2);
+    el('a_a'+v).textContent = amt.toFixed(02);
     sum += amt;
   });
   el('denomTotalAcc').textContent = sum.toFixed(2);
