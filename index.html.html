@@ -199,6 +199,9 @@ th,td{padding:8px;border-bottom:1px solid #f1f5f9;font-size:13px;text-align:left
         <h3>Open Collection Page</h3>
         <label>Collector</label>
         <select id="collectionBy"><option value="">-- select --</option></select>
+
+         <label style="margin-top:8px;">Date</label>
+  <input type="date" id="collectionDate" />
         <div style="display:flex;gap:8px;margin-top:8px"><button id="openCollection" class="btn btn-primary">Open</button><button id="openLinks" class="btn btn-ghost">Links</button></div>
       </div>
     </div>
@@ -656,11 +659,17 @@ function populateCollectionsMadeBy(){
   transactions.forEach(t=> { const m = getVal(t,'MadeBy')||''; if(m) names.add(m); });
   Array.from(names).sort().forEach(n => { const o=document.createElement('option'); o.value=n; o.textContent=n; sel.appendChild(o); });
 }
-el('openCollection').addEventListener('click', ()=> {
-  const maker = el('collectionBy').value; if(!maker) return toast('Select collector');
-  window.open('collection_report.html?maker=' + encodeURIComponent(maker), '_blank');
+el('openCollection').addEventListener('click', () => {
+  const maker = el('collectionBy').value.trim();
+  const date  = el('collectionDate').value.trim();
+  if (!maker) { toast('Select collector'); return; }
+  if (!date)  { toast('Select date'); return; }
+
+const dateObj = new Date(date);
+const formattedDate = dateObj.toISOString().split('T')[0]; // gives YYYY-MM-DD
+const url = `Collection.html?maker=${encodeURIComponent(maker)}&date=${encodeURIComponent(formattedDate)}`;
+  window.open(url, '_blank');
 });
-el('openLinks').addEventListener('click', ()=> window.open('collection_links.html','_blank'));
 
 /* Reports */
 el('runReport').addEventListener('click', loadReport);
