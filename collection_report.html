@@ -52,26 +52,69 @@ input[type=number]{width:80px}
 <p><strong>Status:</strong> <span id="denomStatus"></span></p>
 <button id="checkBtn">Check Tally</button>
 <button id="downloadPdf" style="display:none">Download PDF</button>
-
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTzoRxtRpTDRLiaqjIzf6mHF3GHKCk7UdbABNeuQ1wO5pTT9OtyJrJlYbKLB28qdFF/exec"; // 🔹 Replace with deployed Apps Script WebApp URL
-function getVal(obj,...keys){ if(!obj) return ''; for(const k of keys){ if(obj[k]!=null) return obj[k]; const lk=String(k).toLowerCase(); for(const kk in obj){ if(String(kk).toLowerCase()===lk) return obj[kk]; } } return ''; }
-async function apiGet(params){ const url = SCRIPT_URL + '?' + new URLSearchParams(params); const r = await fetch(url); return r.json(); }
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTzoRxtRpTDRLiaqjIzf6mHF3GHKCk7UdbABNeuQ1wO5pTT9OtyJrJlYbKLB28qdFF/exec"; 
+
+function getVal(obj,...keys){ 
+  if(!obj) return ''; 
+  for(const k of keys){ 
+    if(obj[k]!=null) return obj[k]; 
+    const lk=String(k).toLowerCase(); 
+    for(const kk in obj){ 
+      if(String(kk).toLowerCase()===lk) return obj[kk]; 
+    } 
+  } 
+  return ''; 
+}
+
+async function apiGet(params){ 
+  const url = SCRIPT_URL + '?' + new URLSearchParams(params); 
+  const r = await fetch(url); 
+  return r.json(); 
+}
 
 let cashTotal=0, makerName="", tableData=[];
 
 (async function(){
-  makerName=new URLSearchParams(location.search).get('maker')||'';
-  document.getElementById('title').textContent=makerName+" — Collection Report";
+  const params = new URLSearchParams(window.location.search);
+  const collectorFromUrl = params.get("maker") || "";
+  const dateFromUrl      = params.get("date")  || "";
 
-  const txns=await apiGet({ action:'getTransactions' });
-  const list=(txns||[]).filter(t=>(getVal(t,'MadeBy')||'')===makerName);
-  let tot=0,bank=0,upi=0; cashTotal=0;
+  makerName = collectorFromUrl; // ✅ assign the name from URL
+  document.getElementById('title').textContent = makerName + " — Collection Report";
+
+  // ✅ get all transactions
+  const txns = await apiGet({ action:'getTransactions' });
+
+  // ✅ filter by both collector and date
+const list = (txns || []).filter(t => {
+  const madeBy = (getVal(t,'MadeBy')||'').trim();
+  const dateVal = (getVal(t,'Date')||'').split('|')[0].trim(); // ✅ only left part before '|'
+  // convert 03-11-25 to 2025-11-03 for compare
+  const parts = dateVal.split('-');
+  let normalized = dateVal;
+  if (parts.length === 3 && parts[2].length === 2) {
+    normalized = `20${parts[2]}-${parts[1]}-${parts[0]}`;
+  }
+  return madeBy === makerName && normalized === dateFromUrl;
+});
+  // ✅ no data case
+  if(list.length === 0){
+    document.getElementById('tbody').innerHTML = 
+      `<tr><td colspan="7" style="color:red;">No records found for ${makerName} on ${dateFromUrl}</td></tr>`;
+    return;
+  }
+
+  let tot=0, bank=0, upi=0; 
+  cashTotal=0;
 
   list.forEach(t=>{
-    const amt=parseFloat(getVal(t,'Amount'))||0; tot+=amt;
+    const amt=parseFloat(getVal(t,'Amount'))||0; 
+    tot+=amt;
     const type=(getVal(t,'Type')||'').toLowerCase();
-    if(type==='cash') cashTotal+=amt; else if(type==='bank') bank+=amt; else if(type==='upi') upi+=amt;
+    if(type==='cash') cashTotal+=amt; 
+    else if(type==='bank') bank+=amt; 
+    else if(type==='upi') upi+=amt;
 
     const rowData=[
       getVal(t,'Date'),
