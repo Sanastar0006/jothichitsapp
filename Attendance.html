@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="ta">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Staff Attendance</title>
+  <style>
+    body{font-family:Arial, sans-serif;background:#f4f7fb;padding:18px}
+    .card{max-width:760px;margin:0 auto;background:#fff;padding:16px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+    input,select,button{padding:8px;border-radius:6px;border:1px solid #cfd8e3;margin:6px 0}
+    video{width:320px;height:240px;background:#000;display:block;margin:8px 0}
+    .row{display:flex;gap:12px;align-items:center}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Staff Attendance</h2>
+
+    <!-- LOGIN (local-check using staffList below) -->
+    <div id="loginSection">
+      <label>Username (email)</label><br>
+      <input id="username" type="text" placeholder="email"><br>
+      <label>Password</label><br>
+      <input id="password" type="password" placeholder="password"><br>
+      <button id="loginBtn">Login</button>
+      <p id="loginMsg" style="color:#c00"></p>
+    </div>
+
+    <!-- ATTENDANCE -->
+    <div id="attSection" style="display:none">
+      <div class="row"><strong id="staffName">—</strong><span id="staffUser" style="color:#666"></span></div>
+      <video id="video" autoplay playsinline></video>
+      <canvas id="canvas" width="320" height="240" style="display:none"></canvas>
+      <div>
+        <select id="status">
+          <option>Present</option>
+          <option>Half Day</option>
+          <option>Leave</option>
+        </select>
+        <input id="note" placeholder="Note (optional)">
+      </div>
+      <div class="row">
+        <button id="captureBtn">Capture Photo</button>
+        <button id="markBtn">Mark Attendance</button>
+        <button id="logoutBtn">Logout</button>
+      </div>
+      <p id="locText">Location: detecting...</p>
+      <p id="statusMsg"></p>
+    </div>
+  </div>
+
+<script>
+/*
+  INSTRUCTIONS:
+  1) Replace WEB_APP_URL below with your Apps Script web app URL (deployed).
+  2) This frontend uses a local staff list (so login is offline). If you want server-side login,
+     we must implement a proxy or change Apps Script to allow CORS properly (advanced).
+*/
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby3lDig4qrf_aVu3y6uM2zPRpu0lcRCJ0E0LKuURUWBVE9l8PmK8kxQWab4zMGusYRo/exec"; // <- replace if different
+
+// === staff list (from your earlier provided data) ===
+// If you want this list to come from Google Sheet, we must implement server-login (advanced).
+const staffList = [
+  { name:"V. Shanmuganathan Veerapandiyan", username:"sanmuga0006@gmail.com", password:"Jothi@123", staffId:"001" },
+  { name:"S. Bhuvaneshwar SenthilKumar", username:"sbhuvaneshwari536@gmail.com", password:"Jothi@123", staffId:"002" },
+  { name:"S. Balamanikandan Sanmugam", username:"balamanikandan@jothi.com", password:"Jothi@123", staffId:"003" },
+  { name:"S. Thulasimani", username:"thulasimani@jothi.com", password:"Jothi@123", staffId:"004" },
+  { name:"A. Mathivathani Ashok", username:"vathanimathi.90@gmail.com", password:"Jothi@123", staffId:"005" },
+  { name:"S. Manikandan", username:"manikandan@jothi.com", password:"Jothi@123", staffId:"006" },
+  { name:"Yuvaraj", username:"yuvaraj@jothi.com", password:"Jothi@123", staffId:"007" },
+  { name:"M. Ashok Manikkam", username:"ashok@jothi.com", password:"Jothi@123", staffId:"008" },
+  { name:"D. Dhanapal", username:"dhanapal@jothi.com", password:"Jothi@123", staffId:"009" },
+  { name:"V. Manikandan Vetrivel", username:"vetrimani@jothi.com", password:"Jothi@123", staffId:"010" },
+  { name:"P. Justice Raja Palanichamy", username:"justice@jothi.com", password:"Jothi@123", staffId:"011" },
+  { name:"Priya", username:"priya@jothi.com", password:"Jothi@123", staffId:"012" },
+  { name:"Karthik", username:"karthik@jothi.com", password:"Jothi@123", staffId:"013" }
+];
+
+let current = null;
+const loginBtn = document.getElementById('loginBtn');
+const loginMsg = document.getElementById('loginMsg');
+const usernameInput = document.getElementById('username');
+const passwordInput = document.getElementById('password');
+
+loginBtn.addEventListener('click', ()=>{
+  const u = usernameInput.value.trim();
+  const p = passwordInput.value.trim();
+  if(!u || !p){ loginMsg.textContent = "Enter username & password"; return; }
+  const found = staffList.find(s => s.username === u && s.password === p);
+  if(!found){ loginMsg.textContent = "Invalid credentials"; return; }
+  // success
+  current = found;
+  loginMsg.textContent = "";
+  document.getElementById('loginSection').style.display = 'none';
+  document.getElementById('attSection').style.display = 'block';
+  document.getElementById('staffName').textContent = found.name;
+  document.getElementById('staffUser').textContent = found.username;
+  startCamera();
+  detectLocation();
+});
+
+// ===== camera =====
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+let stream = null;
+async function startCamera(){
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode:'user' }});
+    const v = document.createElement('video'); // we use the visible video element created in DOM
+    // but we need to attach to the page's video element - create one if missing
+    // we already don't have a #video element inside attSection; create and insert
+    const vid = document.querySelector('#video') || (function(){
+      const el = document.createElement('video');
+      el.id = 'video'; el.autoplay = true; el.playsInline = true; el.style.width='320px';
+      document.getElementById('attSection').insertBefore(el, document.getElementById('attSection').children[1]);
+      return el;
+    })();
+    vid.srcObject = stream;
+  } catch(err){
+    alert("Camera error: " + err.message);
+  }
+}
+function stopCamera(){ if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }}
+
+// capture button
+document.getElementById('captureBtn').addEventListener('click', ()=>{
+  const vid = document.getElementById('video');
+  const c = document.getElementById('canvas');
+  c.width = vid.videoWidth || 320; c.height = vid.videoHeight || 240;
+  const ctx = c.getContext('2d');
+  ctx.drawImage(vid, 0, 0, c.width, c.height);
+  alert("Photo captured");
+});
+
+// ===== location =====
+window._lastLat = ""; window._lastLng = ""; window._lastLocText = "";
+function detectLocation(){
+  if(!navigator.geolocation){ document.getElementById('locText').textContent = "Location not supported"; return; }
+  navigator.geolocation.getCurrentPosition((pos)=>{
+    window._lastLat = pos.coords.latitude;
+    window._lastLng = pos.coords.longitude;
+    window._lastLocText = `Lat ${window._lastLat.toFixed(5)}, Lng ${window._lastLng.toFixed(5)}`;
+    document.getElementById('locText').textContent = window._lastLocText;
+  }, (err)=>{
+    document.getElementById('locText').textContent = "Location denied or error";
+  }, { enableHighAccuracy:true, timeout:10000, maximumAge:60000 });
+}
+setInterval(()=>{ if(document.getElementById('attSection').style.display !== 'none') detectLocation(); }, 60000);
+
+// ===== logout =====
+document.getElementById('logoutBtn').addEventListener('click', ()=>{
+  stopCamera();
+  current = null;
+  document.getElementById('loginSection').style.display = 'block';
+  document.getElementById('attSection').style.display = 'none';
+});
+
+// ===== mark attendance =====
+document.getElementById('markBtn').addEventListener('click', async ()=>{
+  if(!current) return alert("Login first");
+  const c = document.getElementById('canvas');
+  const vid = document.getElementById('video');
+  if(!vid || !c) return alert("Please capture photo first (press Capture Photo)");
+  c.width = vid.videoWidth || 320; c.height = vid.videoHeight || 240;
+  const ctx = c.getContext('2d'); ctx.drawImage(vid,0,0,c.width,c.height);
+  const photoBase64 = c.toDataURL('image/png');
+
+  const payload = {
+    username: current.username,
+    staffName: current.name,
+    staffId: current.staffId || '',
+    status: document.getElementById('status').value,
+    note: document.getElementById('note').value || '',
+    lat: window._lastLat || '',
+    lng: window._lastLng || '',
+    photoBase64: photoBase64
+  };
+
+  document.getElementById('statusMsg').textContent = "Sending...";
+  try {
+    // IMPORTANT: use mode:'no-cors' so browser won't block due to CORS. Response will be opaque.
+    await fetch(WEB_APP_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action:'attendance', payload: payload })
+    });
+    document.getElementById('statusMsg').textContent = "Sent. Check Google Sheet / Drive.";
+    alert("Attendance sent — check Sheet & Drive.");
+  } catch(err){
+    document.getElementById('statusMsg').textContent = "Error: " + err.message;
+    alert("Send error: " + err.message);
+  }
+});
+</script>
+</body>
+</html>
+
+<!doctype html>
+<html lang="ta">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Staff Attendance</title>
+  <style>
+    body{font-family:Arial, sans-serif;background:#f4f7fb;padding:18px}
+    .card{max-width:760px;margin:0 auto;background:#fff;padding:16px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+    input,select,button{padding:8px;border-radius:6px;border:1px solid #cfd8e3;margin:6px 0}
+    video{width:320px;height:240px;background:#000;display:block;margin:8px 0}
+    .row{display:flex;gap:12px;align-items:center}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Staff Attendance</h2>
+
+    <!-- LOGIN (local-check using staffList below) -->
+    <div id="loginSection">
+      <label>Username (email)</label><br>
+      <input id="username" type="text" placeholder="email"><br>
+      <label>Password</label><br>
+      <input id="password" type="password" placeholder="password"><br>
+      <button id="loginBtn">Login</button>
+      <p id="loginMsg" style="color:#c00"></p>
+    </div>
+
+    <!-- ATTENDANCE -->
+    <div id="attSection" style="display:none">
+      <div class="row"><strong id="staffName">—</strong><span id="staffUser" style="color:#666"></span></div>
+      <video id="video" autoplay playsinline></video>
+      <canvas id="canvas" width="320" height="240" style="display:none"></canvas>
+      <div>
+        <select id="status">
+          <option>Present</option>
+          <option>Half Day</option>
+          <option>Leave</option>
+        </select>
+        <input id="note" placeholder="Note (optional)">
+      </div>
+      <div class="row">
+        <button id="captureBtn">Capture Photo</button>
+        <button id="markBtn">Mark Attendance</button>
+        <button id="logoutBtn">Logout</button>
+      </div>
+      <p id="locText">Location: detecting...</p>
+      <p id="statusMsg"></p>
+    </div>
+  </div>
+
+<script>
+/*
+  INSTRUCTIONS:
+  1) Replace WEB_APP_URL below with your Apps Script web app URL (deployed).
+  2) This frontend uses a local staff list (so login is offline). If you want server-side login,
+     we must implement a proxy or change Apps Script to allow CORS properly (advanced).
+*/
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby3lDig4qrf_aVu3y6uM2zPRpu0lcRCJ0E0LKuURUWBVE9l8PmK8kxQWab4zMGusYRo/exec"; // <- replace if different
+
+// === staff list (from your earlier provided data) ===
+// If you want this list to come from Google Sheet, we must implement server-login (advanced).
+const staffList = [
+  { name:"V. Shanmuganathan Veerapandiyan", username:"sanmuga0006@gmail.com", password:"Jothi@123", staffId:"001" },
+  { name:"S. Bhuvaneshwar SenthilKumar", username:"sbhuvaneshwari536@gmail.com", password:"Jothi@123", staffId:"002" },
+  { name:"S. Balamanikandan Sanmugam", username:"balamanikandan@jothi.com", password:"Jothi@123", staffId:"003" },
+  { name:"S. Thulasimani", username:"thulasimani@jothi.com", password:"Jothi@123", staffId:"004" },
+  { name:"A. Mathivathani Ashok", username:"vathanimathi.90@gmail.com", password:"Jothi@123", staffId:"005" },
+  { name:"S. Manikandan", username:"manikandan@jothi.com", password:"Jothi@123", staffId:"006" },
+  { name:"Yuvaraj", username:"yuvaraj@jothi.com", password:"Jothi@123", staffId:"007" },
+  { name:"M. Ashok Manikkam", username:"ashok@jothi.com", password:"Jothi@123", staffId:"008" },
+  { name:"D. Dhanapal", username:"dhanapal@jothi.com", password:"Jothi@123", staffId:"009" },
+  { name:"V. Manikandan Vetrivel", username:"vetrimani@jothi.com", password:"Jothi@123", staffId:"010" },
+  { name:"P. Justice Raja Palanichamy", username:"justice@jothi.com", password:"Jothi@123", staffId:"011" },
+  { name:"Priya", username:"priya@jothi.com", password:"Jothi@123", staffId:"012" },
+  { name:"Karthik", username:"karthik@jothi.com", password:"Jothi@123", staffId:"013" }
+];
+
+let current = null;
+const loginBtn = document.getElementById('loginBtn');
+const loginMsg = document.getElementById('loginMsg');
+const usernameInput = document.getElementById('username');
+const passwordInput = document.getElementById('password');
+
+loginBtn.addEventListener('click', ()=>{
+  const u = usernameInput.value.trim();
+  const p = passwordInput.value.trim();
+  if(!u || !p){ loginMsg.textContent = "Enter username & password"; return; }
+  const found = staffList.find(s => s.username === u && s.password === p);
+  if(!found){ loginMsg.textContent = "Invalid credentials"; return; }
+  // success
+  current = found;
+  loginMsg.textContent = "";
+  document.getElementById('loginSection').style.display = 'none';
+  document.getElementById('attSection').style.display = 'block';
+  document.getElementById('staffName').textContent = found.name;
+  document.getElementById('staffUser').textContent = found.username;
+  startCamera();
+  detectLocation();
+});
+
+// ===== camera =====
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+let stream = null;
+async function startCamera(){
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode:'user' }});
+    const v = document.createElement('video'); // we use the visible video element created in DOM
+    // but we need to attach to the page's video element - create one if missing
+    // we already don't have a #video element inside attSection; create and insert
+    const vid = document.querySelector('#video') || (function(){
+      const el = document.createElement('video');
+      el.id = 'video'; el.autoplay = true; el.playsInline = true; el.style.width='320px';
+      document.getElementById('attSection').insertBefore(el, document.getElementById('attSection').children[1]);
+      return el;
+    })();
+    vid.srcObject = stream;
+  } catch(err){
+    alert("Camera error: " + err.message);
+  }
+}
+function stopCamera(){ if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }}
+
+// capture button
+document.getElementById('captureBtn').addEventListener('click', ()=>{
+  const vid = document.getElementById('video');
+  const c = document.getElementById('canvas');
+  c.width = vid.videoWidth || 320; c.height = vid.videoHeight || 240;
+  const ctx = c.getContext('2d');
+  ctx.drawImage(vid, 0, 0, c.width, c.height);
+  alert("Photo captured");
+});
+
+// ===== location =====
+window._lastLat = ""; window._lastLng = ""; window._lastLocText = "";
+function detectLocation(){
+  if(!navigator.geolocation){ document.getElementById('locText').textContent = "Location not supported"; return; }
+  navigator.geolocation.getCurrentPosition((pos)=>{
+    window._lastLat = pos.coords.latitude;
+    window._lastLng = pos.coords.longitude;
+    window._lastLocText = `Lat ${window._lastLat.toFixed(5)}, Lng ${window._lastLng.toFixed(5)}`;
+    document.getElementById('locText').textContent = window._lastLocText;
+  }, (err)=>{
+    document.getElementById('locText').textContent = "Location denied or error";
+  }, { enableHighAccuracy:true, timeout:10000, maximumAge:60000 });
+}
+setInterval(()=>{ if(document.getElementById('attSection').style.display !== 'none') detectLocation(); }, 60000);
+
+// ===== logout =====
+document.getElementById('logoutBtn').addEventListener('click', ()=>{
+  stopCamera();
+  current = null;
+  document.getElementById('loginSection').style.display = 'block';
+  document.getElementById('attSection').style.display = 'none';
+});
+
+// ===== mark attendance =====
+document.getElementById('markBtn').addEventListener('click', async ()=>{
+  if(!current) return alert("Login first");
+  const c = document.getElementById('canvas');
+  const vid = document.getElementById('video');
+  if(!vid || !c) return alert("Please capture photo first (press Capture Photo)");
+  c.width = vid.videoWidth || 320; c.height = vid.videoHeight || 240;
+  const ctx = c.getContext('2d'); ctx.drawImage(vid,0,0,c.width,c.height);
+  const photoBase64 = c.toDataURL('image/png');
+
+  const payload = {
+    username: current.username,
+    staffName: current.name,
+    staffId: current.staffId || '',
+    status: document.getElementById('status').value,
+    note: document.getElementById('note').value || '',
+    lat: window._lastLat || '',
+    lng: window._lastLng || '',
+    photoBase64: photoBase64
+  };
+
+  document.getElementById('statusMsg').textContent = "Sending...";
+  try {
+    // IMPORTANT: use mode:'no-cors' so browser won't block due to CORS. Response will be opaque.
+    await fetch(WEB_APP_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action:'attendance', payload: payload })
+    });
+    document.getElementById('statusMsg').textContent = "Sent. Check Google Sheet / Drive.";
+    alert("Attendance sent — check Sheet & Drive.");
+  } catch(err){
+    document.getElementById('statusMsg').textContent = "Error: " + err.message;
+    alert("Send error: " + err.message);
+  }
+});
+</script>
+</body>
+</html>
+
