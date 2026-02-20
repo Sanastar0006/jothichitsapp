@@ -13,81 +13,141 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-/* ===== ULTRA SHINE BLACK + ROSE GOLD ===== */
+/* Compact styling - Gray Premium Edition */
 
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Segoe UI, Tahoma, Arial;
+}
+
+/* Background + Base Text */
 body{
-  background:
-    radial-gradient(circle at top left, #1a1a1a 0%, #000000 60%),
-    linear-gradient(135deg,#000000,#0f0f0f,#1a1a1a);
-  color:#e6dede;
-  overflow-x:hidden;
+  background:#cfcfcf;          /* Gray background */
+  color:#000;                  /* All text black */
+  padding:16px;
 }
 
-/* Luxury shimmer animation */
-@keyframes shineText{
-  0% {background-position: -200px;}
-  100% {background-position: 200px;}
+/* Main wrapper */
+.wrap{
+  max-width:1200px;
+  margin:0 auto;
+  background:#e4e4e4;
+  padding:18px;
+  border-radius:12px;
+  box-shadow:0 8px 30px rgba(0,0,0,0.15);
+  border:2px solid #8e2de2;
 }
 
-/* Headings Shine */
-h1, h2, h3{
-  background: linear-gradient(
-      90deg,
-      #b76e79,
-      #ff9aa2,
-      #ffffff,
-      #ff9aa2,
-      #b76e79
-  );
-  background-size: 200px;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: shineText 3s linear infinite;
+/* Header */
+header{
+  text-align:center;
+  padding:10px;
 }
 
-/* Normal text subtle glow */
-p, label, span, td{
-  color:#d8cfcf;
-  text-shadow:0 0 6px rgba(255,154,162,0.25);
+h1{
+  font-size:22px;
+  color:#000;
+  font-weight:800;
+}
+
+/* Navigation Tabs */
+.nav-tabs{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin:12px 0;
+}
+
+.tab{
+  padding:8px 12px;
+  border-radius:999px;
+  background:#d9d9d9;
+  color:#000;
+  font-weight:700;
+  cursor:pointer;
+  border:1px solid #aaa;
+}
+
+.tab.active{
+  background:linear-gradient(45deg,#8e2de2,#ff0844);
+  color:#fff;
+  box-shadow:0 4px 14px rgba(255,8,68,0.6);
+}
+
+/* Layout */
+.grid{
+  display:grid;
+  grid-template-columns:1fr 380px;
+  gap:12px;
 }
 
 /* Panels */
-.panel, .wrap{
-  background: rgba(255,255,255,0.03);
-  backdrop-filter: blur(14px);
-  border:1px solid rgba(255,154,162,0.25);
-  box-shadow:
-    0 0 20px rgba(255,154,162,0.15),
-    0 15px 50px rgba(0,0,0,0.9);
-  border-radius:18px;
+.panel{
+  background:#f2f2f2;
+  padding:12px;
+  border-radius:8px;
+  box-shadow:0 4px 14px rgba(0,0,0,0.1);
+  border:1px solid #ccc;
 }
 
-/* ===== SHINE BUTTONS ===== */
-
-.btn-primary{
-  background: linear-gradient(45deg,#b76e79,#ff9aa2);
-  color:#1a1a1a;
+/* Forms */
+label{
+  display:block;
   font-weight:700;
+  margin:6px 0;
+  color:#000;
+}
+
+input,select,textarea{
+  width:100%;
+  padding:8px;
+  border:1px solid #aaa;
+  border-radius:6px;
+  margin-bottom:8px;
+  background:#fff;
+  color:#000;
+}
+
+input:focus,select:focus,textarea:focus{
+  border-color:#8e2de2;
+  box-shadow:0 0 6px rgba(142,45,226,0.5);
+  outline:none;
+}
+
+/* Buttons */
+.btn{
+  padding:8px 12px;
+  border-radius:8px;
   border:none;
-  border-radius:12px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+/* Shine Primary Button */
+.btn-primary{
+  background:linear-gradient(45deg,#8e2de2,#ff0844);
+  color:#fff;
   position:relative;
   overflow:hidden;
-  box-shadow:0 8px 25px rgba(255,154,162,0.6);
+  box-shadow:0 6px 20px rgba(255,8,68,0.5);
 }
 
-/* Moving glossy shine */
+/* Shine animation */
 .btn-primary::before{
   content:'';
   position:absolute;
   top:0;
   left:-100%;
-  width:50%;
+  width:40%;
   height:100%;
   background:linear-gradient(
-      120deg,
-      transparent,
-      rgba(255,255,255,0.5),
-      transparent
+    120deg,
+    transparent,
+    rgba(255,255,255,0.7),
+    transparent
   );
   transform:skewX(-20deg);
   transition:0.6s;
@@ -98,40 +158,90 @@ p, label, span, td{
 }
 
 .btn-primary:hover{
-  transform:translateY(-3px);
-  box-shadow:0 12px 30px rgba(255,154,162,0.9);
+  transform:translateY(-2px);
+  box-shadow:0 10px 25px rgba(255,8,68,0.8);
 }
 
-/* Ghost Button Shine */
+/* Ghost Button */
 .btn-ghost{
-  border:1px solid #ff9aa2;
-  color:#ff9aa2;
-  background:transparent;
-  border-radius:12px;
+  background:#ffffff;
+  border:1px solid #8e2de2;
+  color:#000;
 }
 
 .btn-ghost:hover{
-  background:#ff9aa2;
+  background:#ff0844;
+  color:#fff;
+}
+
+/* Table */
+.table-scroll{
+  max-height:360px;
+  overflow:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:8px;
+  border-bottom:1px solid #ddd;
+  font-size:13px;
+  text-align:left;
   color:#000;
-  box-shadow:0 0 20px rgba(255,154,162,0.6);
 }
 
-/* Scrollbar Glow */
-::-webkit-scrollbar{
-  width:8px;
-}
-::-webkit-scrollbar-thumb{
-  background:linear-gradient(#b76e79,#ff9aa2);
-  border-radius:10px;
-  box-shadow:0 0 10px rgba(255,154,162,0.6);
+/* Toast */
+.toast{
+  position:fixed;
+  right:16px;
+  bottom:16px;
+  background:linear-gradient(45deg,#8e2de2,#ff0844);
+  color:#fff;
+  padding:8px 12px;
+  border-radius:8px;
+  display:none;
+  box-shadow:0 6px 20px rgba(255,8,68,0.6);
 }
 
-/* Modal Glow */
-#receiptModal > div{
-  background:#111;
-  border:1px solid #ff9aa2;
-  box-shadow:0 0 35px rgba(255,154,162,0.6);
+/* Status */
+.status-ok{
+  color:green;
+  font-weight:700;
 }
+
+.status-bad{
+  color:red;
+  font-weight:700;
+}
+
+/* Responsive */
+@media(max-width:980px){
+  .grid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* Print CSS */
+@media print {
+  @page { size: 48mm auto; margin: 0; }
+  body * { visibility: hidden; }
+  #print-area, #print-area * { visibility: visible; }
+  #print-area { position: absolute; left: 0; top: 0; }
+}
+
+.receipt-print{
+  width:48mm;
+  padding:6px;
+  font-family:monospace;
+  font-size:12px;
+  line-height:1.2;
+  color:#000;
+}
+
+  
 </style>
 </head>
 <body>
@@ -942,6 +1052,7 @@ function populateAccountsForOptions(){
 </script>
 </body>
 </html>
+
 
 
 
