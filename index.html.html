@@ -13,7 +13,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-/* Compact styling - Gray Premium Edition */
+
+/* ===== GRAY PREMIUM FULL WIDTH + ALL TEXT BLACK ===== */
 
 *{
   box-sizing:border-box;
@@ -22,16 +23,17 @@
   font-family:Segoe UI, Tahoma, Arial;
 }
 
-/* Background + Base Text */
+/* Background */
 body{
-  background:#cfcfcf;          /* Gray background */
-  color:#000;                  /* All text black */
+  background:#cfcfcf;
+  color:#000;
   padding:16px;
 }
 
-/* Main wrapper */
+/* Wrapper Full Width */
 .wrap{
-  max-width:1200px;
+  width:100%;
+  max-width:100%;
   margin:0 auto;
   background:#e4e4e4;
   padding:18px;
@@ -48,11 +50,11 @@ header{
 
 h1{
   font-size:22px;
-  color:#000;
   font-weight:800;
+  color:#000;
 }
 
-/* Navigation Tabs */
+/* Navigation */
 .nav-tabs{
   display:flex;
   gap:8px;
@@ -73,24 +75,24 @@ h1{
 
 .tab.active{
   background:linear-gradient(45deg,#8e2de2,#ff0844);
-  color:#fff;
+  color:#000;
   box-shadow:0 4px 14px rgba(255,8,68,0.6);
 }
 
-/* Layout */
+/* Layout Full Width */
 .grid{
-  display:grid;
-  grid-template-columns:1fr 380px;
-  gap:12px;
+  display:block;
 }
 
 /* Panels */
 .panel{
+  width:100%;
   background:#f2f2f2;
-  padding:12px;
+  padding:16px;
   border-radius:8px;
   box-shadow:0 4px 14px rgba(0,0,0,0.1);
   border:1px solid #ccc;
+  margin:20px 0;
 }
 
 /* Forms */
@@ -111,6 +113,12 @@ input,select,textarea{
   color:#000;
 }
 
+input::placeholder,
+textarea::placeholder{
+  color:#000;
+  opacity:1;
+}
+
 input:focus,select:focus,textarea:focus{
   border-color:#8e2de2;
   box-shadow:0 0 6px rgba(142,45,226,0.5);
@@ -126,16 +134,15 @@ input:focus,select:focus,textarea:focus{
   font-weight:700;
 }
 
-/* Shine Primary Button */
+/* Shine Button */
 .btn-primary{
   background:linear-gradient(45deg,#8e2de2,#ff0844);
-  color:#fff;
+  color:#000;
   position:relative;
   overflow:hidden;
   box-shadow:0 6px 20px rgba(255,8,68,0.5);
 }
 
-/* Shine animation */
 .btn-primary::before{
   content:'';
   position:absolute;
@@ -171,7 +178,7 @@ input:focus,select:focus,textarea:focus{
 
 .btn-ghost:hover{
   background:#ff0844;
-  color:#fff;
+  color:#000;
 }
 
 /* Table */
@@ -199,7 +206,7 @@ th,td{
   right:16px;
   bottom:16px;
   background:linear-gradient(45deg,#8e2de2,#ff0844);
-  color:#fff;
+  color:#000;
   padding:8px 12px;
   border-radius:8px;
   display:none;
@@ -220,11 +227,11 @@ th,td{
 /* Responsive */
 @media(max-width:980px){
   .grid{
-    grid-template-columns:1fr;
+    display:block;
   }
 }
 
-/* Print CSS */
+/* Print */
 @media print {
   @page { size: 48mm auto; margin: 0; }
   body * { visibility: hidden; }
@@ -240,7 +247,6 @@ th,td{
   line-height:1.2;
   color:#000;
 }
-
   
 </style>
 </head>
@@ -1052,6 +1058,7 @@ function populateAccountsForOptions(){
 </script>
 </body>
 </html>
+
 
 
 
