@@ -3,28 +3,48 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<meta name="theme-color" content="#0f0f1a"/>
-<title>Jothi Anantham Chits - Home</title>
+<title>Jothi Anantham Chits</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
 
-body{
-  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-  min-height:100vh;
-  color:white;
-  padding:40px;
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
 }
 
-h1{
+body{
+  min-height:100vh;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:white;
+  overflow-x:hidden;
+}
+
+/* ===== PARTICLE CANVAS ===== */
+#particles{
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:-1;
+}
+
+/* ===== CONTAINER ===== */
+.container{
+  padding:50px 20px;
   text-align:center;
-  font-size:30px;
+}
+
+/* ===== TITLE ===== */
+h1{
+  font-size:32px;
   margin-bottom:40px;
   letter-spacing:1px;
 }
 
+/* ===== BUTTON GRID ===== */
 .menu{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
@@ -33,23 +53,96 @@ h1{
   margin:auto;
 }
 
+/* ===== CORPORATE BUTTON ===== */
 .menu button{
   padding:20px;
-  border:none;
   border-radius:12px;
-  font-weight:600;
+  border:1px solid rgba(255,255,255,.2);
   background:white;
   color:#203a43;
-  box-shadow:0 8px 25px rgba(0,0,0,.3);
-  transition:.3s;
+  font-weight:600;
+  font-size:15px;
   cursor:pointer;
+  transition:0.3s ease;
+  box-shadow:0 8px 25px rgba(0,0,0,.3);
 }
 
+/* ===== GOLD HOVER EFFECT ===== */
 .menu button:hover{
+  background:linear-gradient(90deg,#FFD700,#D4AF37);
+  color:black;
   transform:translateY(-5px);
-  box-shadow:0 12px 35px rgba(0,0,0,.5);
-  background:#2c5364;
+  box-shadow:0 12px 35px rgba(255,215,0,.6);
+}
+
+/* ===== SLIDESHOW ===== */
+.content{
+  margin-top:60px;
+  display:flex;
+  justify-content:center;
+}
+
+.slideshow{
+  width:300px;
+  height:300px;
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 15px 40px rgba(0,0,0,.6);
+}
+
+.slides{
+  display:flex;
+  width:300%;
+  height:100%;
+  animation:slide 18s infinite;
+}
+
+.slides img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+@keyframes slide{
+  0%{transform:translateX(0);}
+  33%{transform:translateX(-100%);}
+  66%{transform:translateX(-200%);}
+  100%{transform:translateX(0);}
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:600px){
+  h1{font-size:24px;}
+  .slideshow{width:240px;height:240px;}
+}
+/* Overlay Text */
+.slideText{
+  position:absolute;
+  bottom:20px;
+  left:0;
+  width:100%;
+  text-align:center;
+  opacity:0;
+  transition:1s ease;
+}
+
+.slideText h2{
+  font-size:22px;
+  background:linear-gradient(90deg,#FFD700,#D4AF37);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  margin-bottom:5px;
+}
+
+.slideText p{
+  font-size:14px;
   color:white;
+  letter-spacing:1px;
+}
+
+/* Show text after slideshow */
+.slideshow.showText .slideText{
+  opacity:1;
 }
 
 </style>
@@ -57,11 +150,13 @@ h1{
 
 <body>
 
-<div id="offlineNotice">Offline Mode Active</div>
+<canvas id="particles"></canvas>
 
 <div class="container">
+
+  <h1>Jothi Anantham Chits</h1>
+
   <div class="menu">
-    <h1>Jothi Anantham Chits</h1>
     <button onclick="location.href='index.html.html'">Admin & Collection</button>
     <button onclick="location.href='Succuss.html'">Success Story</button>
     <button onclick="location.href='Login.html'">Transaction Entry</button>
@@ -70,27 +165,67 @@ h1{
     <button onclick="location.href='Attendance.html'">Staff Attendance</button>
   </div>
 
-  <div class="content">
-    <div class="slideshow">
-      <div class="slides">
-        <img src="https://sanastar0006.github.io/jothichitsapp/android-chrome-512x512.png">
-        <img src="https://img.freepik.com/free-vector/savings-concept-illustration_114360-2146.jpg">
-        <img src="https://img.freepik.com/free-vector/financial-data-concept-illustration_114360-1188.jpg">
-      </div>
-    </div>
+  <div class="slideshow">
+  <div class="slides">
+    <img src="https://sanastar0006.github.io/jothichitsapp/android-chrome-512x512.png">
+    <img src="https://img.freepik.com/free-vector/savings-concept-illustration_114360-2146.jpg">
+    <img src="https://img.freepik.com/free-vector/financial-data-concept-illustration_114360-1188.jpg">
+  </div>
+
+  <!-- TEXT OVERLAY -->
+  <div class="slideText">
+    <h2>Jothi Anantham Chit Fund</h2>
+    <p>The Place of Hope</p>
   </div>
 </div>
 
 <script>
-function updateNetworkStatus(){
-  document.getElementById('offlineNotice').style.display =
-  navigator.onLine ? 'none':'block';
+
+/* ===== PARTICLE ANIMATION ===== */
+
+const canvas=document.getElementById("particles");
+const ctx=canvas.getContext("2d");
+
+function resize(){
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
 }
-window.addEventListener('online',updateNetworkStatus);
-window.addEventListener('offline',updateNetworkStatus);
-updateNetworkStatus();
+resize();
+window.addEventListener("resize",resize);
+
+let particles=[];
+for(let i=0;i<70;i++){
+  particles.push({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    r:Math.random()*2+1,
+    dx:(Math.random()-0.5)*0.5,
+    dy:(Math.random()-0.5)*0.5
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle="rgba(255,255,255,0.5)";
+  particles.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fill();
+    p.x+=p.dx;
+    p.y+=p.dy;
+
+    if(p.x<0||p.x>canvas.width)p.dx*=-1;
+    if(p.y<0||p.y>canvas.height)p.dy*=-1;
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
+setTimeout(()=>{
+  document.querySelector(".slideshow").classList.add("showText");
+},13);
+
 </script>
 
 </body>
 </html>
-
