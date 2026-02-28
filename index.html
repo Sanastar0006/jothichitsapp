@@ -1,235 +1,215 @@
 <!DOCTYPE html>
 <html lang="ta">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#ffffff"/>
-  <title>Jothi Anantham Chits - Home</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="theme-color" content="#0f0f1a"/>
+<title>Jothi Anantham Chits - Home</title>
 
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="icons/icon-192.png" sizes="192x192" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6f9;
-    }
+<style>
 
-    /* Container is now column layout */
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
+}
 
-    /* Menu on top */
-    .menu {
-      width: 100%;
-      background: #fff;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      padding: 15px 0;
-      margin-bottom: 20px;
-    }
+body{
+  background: linear-gradient(135deg,#0f0f1a,#1b1035,#2b0f40);
+  min-height:100vh;
+  color:white;
+  overflow-x:hidden;
+}
 
-    .menu h1 {
-      width: 100%;
-      text-align: center;
-      color: #2c3e50;
-      margin-bottom: 15px;
-    }
+/* Glow Background */
+body::before{
+  content:"";
+  position:fixed;
+  width:500px;
+  height:500px;
+  background:radial-gradient(circle,#8e2de2,transparent 70%);
+  top:-150px;
+  left:-150px;
+  filter:blur(100px);
+  opacity:0.5;
+}
 
-    .menu button {
-      padding: 10px 20px;
-      margin: 8px;
-      font-size: 16px;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
+/* Container */
+.container{
+  padding:40px 20px;
+  text-align:center;
+}
 
-    .menu button:hover {
-      opacity: 0.9;
-      transform: translateY(-2px);
-    }
+/* Title */
+.menu h1{
+  font-size:32px;
+  font-weight:700;
+  background:linear-gradient(90deg,#c471f5,#fa71cd);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  margin-bottom:30px;
+  letter-spacing:1px;
+}
 
-    .btn-admin { background-color: #3498db; color: #fff; }
-    .btn-accounts { background-color: #27ae60; color: #fff; }
-    .btn-transaction { background-color: #9b59b6; color: #fff; }
+/* Button Grid */
+.menu{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+  max-width:900px;
+  margin:auto;
+}
 
-    /* Slideshow on right */
-    .content {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      width: 100%;
-    }
+/* Luxury Button */
+.menu button{
+  padding:18px;
+  border:none;
+  border-radius:14px;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  color:white;
+  backdrop-filter:blur(12px);
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15);
+  transition:0.3s ease;
+  box-shadow:0 8px 20px rgba(0,0,0,0.3);
+}
 
-    .slideshow {
-      width: 10cm;
-      height: 10cm;
-      overflow: hidden;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      margin-left: auto;
-    }
+.menu button:hover{
+  transform:translateY(-5px) scale(1.03);
+  background:linear-gradient(90deg,#8e2de2,#ff416c);
+  box-shadow:0 12px 30px rgba(0,0,0,0.6);
+}
 
-    .slides {
-      display: flex;
-      width: 300%;
-      height: 100%;
-      animation: slide 30s infinite;
-    }
+/* Slideshow */
+.content{
+  margin-top:50px;
+  display:flex;
+  justify-content:center;
+}
 
-    .slides img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+.slideshow{
+  width:320px;
+  height:320px;
+  border-radius:20px;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 15px 40px rgba(0,0,0,0.6);
+  border:1px solid rgba(255,255,255,0.1);
+}
 
-    @keyframes slide {
-      0% { transform: translateX(0); }
-      33% { transform: translateX(-100%); }
-      66% { transform: translateX(-200%); }
-      100% { transform: translateX(0); }
-    }
+.slides{
+  display:flex;
+  width:300%;
+  height:100%;
+  animation:slide 20s infinite;
+}
 
-    /* Install prompt bar */
-    #installBar {
-      display:none;
-      position: fixed;
-      left: 12px;
-      right: 12px;
-      bottom: 20px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-      padding: 10px 14px;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      z-index: 999;
-    }
+.slides img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
 
-    #installBar button {
-      padding:8px 12px;
-      border-radius:8px;
-      border:none;
-      font-weight:600;
-      cursor:pointer;
-    }
+@keyframes slide{
+  0%{transform:translateX(0);}
+  33%{transform:translateX(-100%);}
+  66%{transform:translateX(-200%);}
+  100%{transform:translateX(0);}
+}
 
-    #installBar .primary { background:#3498db; color:#fff; }
+/* Install Bar */
+#installBar{
+  display:none;
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(15px);
+  border:1px solid rgba(255,255,255,0.2);
+  padding:12px 20px;
+  border-radius:14px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.6);
+  gap:15px;
+  align-items:center;
+}
 
-    #offlineNotice {
-      display:none;
-      position:fixed;
-      top:12px;
-      left:12px;
-      right:12px;
-      background:#ffefc6;
-      border-radius:10px;
-      padding:8px 12px;
-      text-align:center;
-      box-shadow:0 6px 18px rgba(0,0,0,0.08);
-      z-index:999;
-    }
+#installBar button{
+  padding:8px 15px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:600;
+}
 
-    @media (max-width:800px){
-      .menu {
-        flex-direction: column;
-      }
-      .slideshow {
-        width: 8cm;
-        height: 8cm;
-        margin: 0 auto;
-      }
-    }
-  </style>
+.primary{
+  background:linear-gradient(90deg,#8e2de2,#ff416c);
+  color:white;
+}
+
+/* Offline Notice */
+#offlineNotice{
+  display:none;
+  position:fixed;
+  top:15px;
+  left:50%;
+  transform:translateX(-50%);
+  background:linear-gradient(90deg,#ff416c,#ff4b2b);
+  padding:8px 15px;
+  border-radius:8px;
+  font-size:14px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.4);
+}
+
+/* Mobile */
+@media(max-width:600px){
+  .menu h1{font-size:24px;}
+  .slideshow{width:260px;height:260px;}
+}
+
+</style>
 </head>
+
 <body>
-  <div id="offlineNotice">உங்கள் இணையம் இல்லாமல் இருக்கிறதா? சில வசதிகள் offline-ல வேலை செய்யலாம்.</div>
 
-  <div class="container">
-    <!-- Menu on Top -->
-    <div class="menu">
-      <h1>Jothi Anantham Chits</h1>
-      <button class="btn-admin" onclick="location.href='index.html.html'">Admin & Collection</button>
-      <button class="btn-accounts" onclick="location.href='Succuss.html'">Success story / Testimonial</button>
-      <button class="btn-transaction" onclick="location.href='Login.html'">Transaction Entry</button>
-      <button class="btn-accounts" onclick="location.href='Aef Form.html'">AEF</button>
-      <button class="btn-admin" onclick="location.href='Field Investigation Portal.html'">FI</button>
-      <button class="btn-transaction" onclick="location.href='Attendance.html'">Staff Attandance</button>
-    </div>
+<div id="offlineNotice">Offline Mode Active</div>
 
-    <!-- Slideshow on Right -->
-    <div class="content">
-      <div class="slideshow">
-        <div class="slides">
-          <img src="https://sanastar0006.github.io/jothichitsapp/android-chrome-512x512.png" alt="Chit Fund Image 1">
-          <img src="https://img.freepik.com/free-vector/savings-concept-illustration_114360-2146.jpg" alt="Chit Fund Image 2">
-          <img src="https://img.freepik.com/free-vector/financial-data-concept-illustration_114360-1188.jpg" alt="Chit Fund Image 3">
-        </div>
+<div class="container">
+  <div class="menu">
+    <h1>Jothi Anantham Chits</h1>
+    <button onclick="location.href='index.html.html'">Admin & Collection</button>
+    <button onclick="location.href='Succuss.html'">Success Story</button>
+    <button onclick="location.href='Login.html'">Transaction Entry</button>
+    <button onclick="location.href='Aef Form.html'">AEF</button>
+    <button onclick="location.href='Field Investigation Portal.html'">FI Portal</button>
+    <button onclick="location.href='Attendance.html'">Staff Attendance</button>
+  </div>
+
+  <div class="content">
+    <div class="slideshow">
+      <div class="slides">
+        <img src="https://sanastar0006.github.io/jothichitsapp/android-chrome-512x512.png">
+        <img src="https://img.freepik.com/free-vector/savings-concept-illustration_114360-2146.jpg">
+        <img src="https://img.freepik.com/free-vector/financial-data-concept-illustration_114360-1188.jpg">
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Install prompt -->
-  <div id="installBar">
-    <div style="font-weight:600">Install Jothi Anantham Chits</div>
-    <div>
-      <button id="installBtn" class="primary">Install</button>
-      <button id="dismissInstall">Close</button>
-    </div>
-  </div>
+<script>
+function updateNetworkStatus(){
+  document.getElementById('offlineNotice').style.display =
+  navigator.onLine ? 'none':'block';
+}
+window.addEventListener('online',updateNetworkStatus);
+window.addEventListener('offline',updateNetworkStatus);
+updateNetworkStatus();
+</script>
 
-  <script>
-    // Service worker register
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(reg => console.log('SW registered', reg))
-        .catch(err => console.warn('SW register failed', err));
-    }
-
-    // Install prompt logic
-    let deferredPrompt;
-    const installBar = document.getElementById('installBar');
-    const installBtn = document.getElementById('installBtn');
-    const dismissBtn = document.getElementById('dismissInstall');
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installBar.style.display = 'flex';
-    });
-
-    installBtn.addEventListener('click', async () => {
-      installBar.style.display = 'none';
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      deferredPrompt = null;
-    });
-
-    dismissBtn.addEventListener('click', () => {
-      installBar.style.display = 'none';
-    });
-
-    // Offline notice
-    function updateNetworkStatus() {
-      const off = !navigator.onLine;
-      document.getElementById('offlineNotice').style.display = off ? 'block' : 'none';
-    }
-    window.addEventListener('online', updateNetworkStatus);
-    window.addEventListener('offline', updateNetworkStatus);
-    updateNetworkStatus();
-  </script>
 </body>
 </html>
